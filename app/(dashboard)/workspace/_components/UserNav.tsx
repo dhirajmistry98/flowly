@@ -1,5 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+"use client"
+
+
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
+import { Button } from "../../../../components/ui/button";
 import {
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -7,16 +11,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../../../../components/ui/dropdown-menu";
 import { LogoutLink,PortalLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { CreditCard, LogOut, User } from "lucide-react";
+import { orpc } from "../../../../lib/orpc";
+import { getAvatar } from "../../../../lib/get-avatar";
 
-const user = {
-  picture: "https://avatars.githubusercontent.com/u/124599?v=4",
-  given_name: "Dhiraj",
-};
+
 export function UserNav() {
+  const {data:{user},} = useSuspenseQuery(orpc.workspace.list.queryOptions());
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -27,12 +33,12 @@ export function UserNav() {
         >
           <Avatar>
             <AvatarImage
-              src={user.picture}
+              src={getAvatar(user.picture,user.email!)}
               alt="User Image"
               className="object-cover"
             />
             <AvatarFallback>
-              {user.given_name.slice(0, 1).toUpperCase()}
+              {user.given_name?.slice(0, 1).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -46,12 +52,12 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal flex items-center gap-2 px-1 py-1.5 text-left text-sm">
           <Avatar className="relative size-8">
             <AvatarImage
-              src={user.picture}
+              src={getAvatar(user.picture,user.email!)}
               alt="User Image"
               className="object-cover"
             />
             <AvatarFallback>
-              {user.given_name.slice(0, 1).toUpperCase()}
+              {user.given_name?.slice(0, 1).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="gird flex-1 text-left text-sm leading-tight">
