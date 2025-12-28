@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ChannelNameSchema,
   ChannelSchemaNameType,
@@ -25,7 +27,7 @@ import { orpc } from "@/lib/orpc";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isDefinedError } from "@orpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Plus } from "lucide-react";
 
@@ -35,6 +37,8 @@ import { toast } from "sonner";
 
 export function CreateNewChannel() {
   const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
+
   const form = useForm({
     resolver: zodResolver(ChannelNameSchema),
     defaultValues: {
@@ -48,7 +52,9 @@ export function CreateNewChannel() {
     orpc.channel.create.mutationOptions({
       onSuccess: ( newChannel) =>{
         toast.success(`Channel ${newChannel.name} created Successfully`);
-
+       queryClient.invalidateQueries({
+        queryKey: orpc.channel.list.queryKey(),
+       })
         form.reset();
         setOpen(false);
       },
