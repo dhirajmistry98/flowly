@@ -7,8 +7,16 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         hostname:"avatars.githubusercontent.com",
-        protocol:"https"
+        protocol:"https",
       },
+      {
+        hostname:"*.googleusercontent.com",
+        protocol:"https",
+      },
+      {
+        hostname:"https://avatar.vercel.sh",
+         protocol:"https",
+      }
     ],
   },
 };

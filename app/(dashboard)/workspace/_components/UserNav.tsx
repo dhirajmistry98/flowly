@@ -17,6 +17,7 @@ import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { CreditCard, LogOut, User } from "lucide-react";
 import { orpc } from "../../../../lib/orpc";
 import { getAvatar } from "../../../../lib/get-avatar";
+import Image from "next/image";
 
 
 export function UserNav() {
@@ -32,11 +33,8 @@ export function UserNav() {
           className="size-12 rounded-xl border-border/50 hover:bg-accent hover:text-accent-foreground hover:rounded-lg transition-all duration-200 bg-background/50"
         >
           <Avatar>
-            <AvatarImage
-              src={getAvatar(user.picture,user.email!)}
-              alt="User Image"
-              className="object-cover"
-            />
+            <Image src={getAvatar(user.picture,user.email!)}   alt="User Image"  fill className="object-cover"/>
+           
             <AvatarFallback>
               {user.given_name?.slice(0, 1).toUpperCase()}
             </AvatarFallback>
