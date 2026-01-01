@@ -30,6 +30,7 @@ import { isDefinedError } from "@orpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Plus } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -38,6 +39,8 @@ import { toast } from "sonner";
 export function CreateNewChannel() {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const { workspaceId } = useParams<{ workspaceId: string }>();
 
   const form = useForm({
     resolver: zodResolver(ChannelNameSchema),
@@ -46,29 +49,28 @@ export function CreateNewChannel() {
     },
   });
 
- 
-
   const createChannelMutation = useMutation(
     orpc.channel.create.mutationOptions({
-      onSuccess: ( newChannel) =>{
+      onSuccess: (newChannel) => {
         toast.success(`Channel ${newChannel.name} created Successfully`);
-       queryClient.invalidateQueries({
-        queryKey: orpc.channel.list.queryKey(),
-       })
+        queryClient.invalidateQueries({
+          queryKey: orpc.channel.list.queryKey(),
+        });
         form.reset();
         setOpen(false);
+        router.push(`/workspace/${workspaceId}/channel/${newChannel.id}`);
       },
-      onError:(error) => {
+      onError: (error) => {
         if (isDefinedError(error)) {
-          toast.error(error.message)
+          toast.error(error.message);
           return;
         }
-        toast.error('Failed to create chanel. please try again')
+        toast.error("Failed to create chanel. please try again");
       },
     })
-  )
+  );
 
-  function onSubmit(values:ChannelSchemaNameType){
+  function onSubmit(values: ChannelSchemaNameType) {
     createChannelMutation.mutate(values);
   }
 
