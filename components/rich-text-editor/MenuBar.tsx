@@ -4,8 +4,8 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../tooltip";
-import { Toggle } from "../toggle";
+} from "../ui/tooltip";
+import { Toggle } from "../ui/toggle";
 import {
   Bold,
   Code,
@@ -17,7 +17,7 @@ import {
   Undo,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "../button";
+import { Button } from "../ui/button";
 
 interface MenuBarProps {
   editor: Editor | null;
@@ -108,8 +108,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleCodeBlock().run()
                 }
                 className={cn(
-                  editorState?.isCodeBlock &&
-                    "bg-muted text-muted-foreground"
+                  editorState?.isCodeBlock && "bg-muted text-muted-foreground"
                 )}
               >
                 <Code />
@@ -129,8 +128,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleBulletList().run()
                 }
                 className={cn(
-              editorState?.isBulletList &&
-                    "bg-muted  text-muted-foreground"
+                  editorState?.isBulletList && "bg-muted  text-muted-foreground"
                 )}
               >
                 <List />
@@ -147,8 +145,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleOrderedList().run()
                 }
                 className={cn(
-                  editorState?.isOrderedList &&
-                    "bg-muted text-muted-foreground"
+                  editorState?.isOrderedList && "bg-muted text-muted-foreground"
                 )}
               >
                 <ListOrdered />

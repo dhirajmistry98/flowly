@@ -1,23 +1,16 @@
+import { SafeContent } from "@/components/rich-text-editor/SafeContent";
+import { Message } from "@/lib/generated/prisma/client";
+import { getAvatar } from "@/lib/get-avatar";
 import Image from "next/image";
 
 interface iAppProps {
-  id: number;
-  message: string;
-  date: Date;
-  avatar: string;
-  userName: string;
+  message: Message;
 }
-export function MessageItem({
-  userName,
-  date,
-  id,
-  message,
-  avatar,
-}: iAppProps) {
+export function MessageItem({ message }: iAppProps) {
   return (
     <div className="flex space-x-3 p-3 rounded-lg group hover:bg-muted/50">
       <Image
-        src={avatar}
+        src={getAvatar(message.authorAvatar, message.authorEmail)}
         alt="User Avatar"
         width={32}
         height={32}
@@ -25,22 +18,22 @@ export function MessageItem({
       />
       <div className="flex-1 space-y1 min-w-0">
         <div className="flex items-center gap-x-2">
-          <p className="font-medium leading-none ">{userName}</p>
+          <p className="font-medium leading-none ">{message.authorName}</p>
           <p className="text-xs text-muted-foreground leading-none ">
             {new Intl.DateTimeFormat("en-Gb", {
               day: "numeric",
               month: "short",
               year: "numeric",
-            }).format(date)}
-            {" "}
-              {new Intl.DateTimeFormat("en-Gb", {
-              hour12:false,
-              minute:'2-digit',
-            }).format(date)}
+            }).format(message.createdAt)}{" "}
+            {new Intl.DateTimeFormat("en-Gb", {
+              hour12: false,
+              minute: "2-digit",
+            }).format(message.createdAt)}
           </p>
         </div>
-        <p className="text-sm break-work max-w-none marker:text-primary">{message}</p>
-      </div> 
+
+        <SafeContent  className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary" content={JSON.parse(message.content)} />
+      </div>
     </div>
   );
 }
