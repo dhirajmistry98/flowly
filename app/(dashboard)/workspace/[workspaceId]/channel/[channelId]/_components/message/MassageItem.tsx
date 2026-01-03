@@ -20,19 +20,21 @@ export function MessageItem({ message }: iAppProps) {
         <div className="flex items-center gap-x-2">
           <p className="font-medium leading-none ">{message.authorName}</p>
           <p className="text-xs text-muted-foreground leading-none ">
-            {new Intl.DateTimeFormat("en-Gb", {
+            {new Intl.DateTimeFormat("en-GB", {
               day: "numeric",
               month: "short",
               year: "numeric",
-            }).format(message.createdAt)}{" "}
-            {new Intl.DateTimeFormat("en-Gb", {
-              hour12: false,
+              hour: "2-digit",
               minute: "2-digit",
+              hour12: false,
             }).format(message.createdAt)}
           </p>
         </div>
 
-        <SafeContent  className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary" content={JSON.parse(message.content)} />
+        <SafeContent
+          className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
+          content={JSON.parse(message.content)}
+        />
       </div>
     </div>
   );
