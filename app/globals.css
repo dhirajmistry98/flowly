@@ -4,6 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist"; 
+
 :root {
   /* Base colors */
   --background: oklch(1 0 0);

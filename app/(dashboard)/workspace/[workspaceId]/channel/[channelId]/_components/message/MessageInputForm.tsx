@@ -1,6 +1,9 @@
-"use client"
+"use client";
 
-import { createMassageSchema, createMassageSchemaType } from "@/app/schemas/message";
+import {
+  createMassageSchema,
+  createMassageSchemaType,
+} from "@/app/schemas/message";
 import {
   Form,
   FormControl,
@@ -15,43 +18,52 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
 
 interface iAppProps {
   channelId: string;
 }
 
 export function MessageInputForm({ channelId }: iAppProps) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const [editorKey,setEditorKey] = useState(0)
+  const [editorKey, setEditorKey] = useState(0);
+
+  const upload = useAttachmentUpload();
 
   const form = useForm({
     resolver: zodResolver(createMassageSchema),
+
     defaultValues: {
       channelId: channelId,
       content: "",
+
     },
   });
 
   const createMassageMutation = useMutation(
     orpc.message.create.mutationOptions({
-      onSuccess:()=> {
+      onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: orpc.message.list.key(),
-        })
+        });
 
-         form.reset({channelId,content:""})
-         setEditorKey((k)=> k + 1);
-        return toast.success('message created successfully');
+        form.reset({ channelId, content: "" });
+        upload.Clear();
+        setEditorKey((k) => k + 1);
+        return toast.success("message created successfully");
       },
-      onError:() =>{
-        return toast.error('something went wrong');
-      }
+      onError: () => {
+        return toast.error("something went wrong");
+      },
     })
-  )
+  );
 
-  function onSubmit(data:createMassageSchemaType){
-createMassageMutation.mutate(data);
+  function onSubmit(data: createMassageSchemaType) {
+    createMassageMutation.mutate({
+      ...data,
+      imageUrl: upload.stagedUrl ?? undefined,
+    });
   }
 
   return (
@@ -63,12 +75,13 @@ createMassageMutation.mutate(data);
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <MessageComposer 
-                key={editorKey}
+                <MessageComposer
+                  key={editorKey}
                   value={field.value}
                   onChange={field.onChange}
-                  onSubmit={()=>onSubmit(form.getValues())}
+                  onSubmit={() => onSubmit(form.getValues())}
                   isSubmitting={createMassageMutation.isPending}
+                  upload={upload}
                 />
               </FormControl>
               <FormMessage />
