@@ -219,13 +219,14 @@ export function MessageList() {
         </div>
       )}
 
-      {newMessages && !isAtBottom && (
+      {!isAtBottom && (
         <Button
           type="button"
-          className="absolute bottom-4 right-8 rounded-full"
+          size="sm"
           onClick={scrollToBottom}
+          className="absolute bottom-4 right-5 z-20 size-10 rounded-full hover:shadow-xl transition-all duration-200"
         >
-          New Messages
+          <ChevronDown className="size-4" />
         </Button>
       )}
     </div>
