@@ -14,15 +14,23 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { MessageComposer } from "./MessageComposer";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
+import {Message} from "react-hook-form"
+import { userAgent } from "next/server";
 
 interface iAppProps {
   channelId: string;
 }
+
+type MessagePage = {items: Message[]; nextCursor?: string
+};
+
+type InfiniteMessages = InfiniteData<MessagePage>;
+
 
 export function MessageInputForm({ channelId }: iAppProps) {
   const queryClient = useQueryClient();
@@ -31,18 +39,39 @@ export function MessageInputForm({ channelId }: iAppProps) {
 
   const upload = useAttachmentUpload();
 
+  
+
   const form = useForm({
     resolver: zodResolver(createMassageSchema),
 
     defaultValues: {
       channelId: channelId,
       content: "",
-
     },
   });
 
   const createMassageMutation = useMutation(
     orpc.message.create.mutationOptions({
+      onMutate: async (data) => {
+        await queryClient.cancelQueries({
+          queryKey: ["message.list", channelId],
+        });
+        const previousData = queryClient.getQueryData<InfiniteMessages>([
+          "message.list",
+          channelId,
+        ]);
+
+        const tempId = `optimistic-${crypto.randomUUID()}`;
+
+        const optimisticMessage: Message = {
+          id: tempId,
+          content: data.content,
+          imageUrl:data.imageUrl ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          authorId: userAgent.id
+        };
+      },
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: orpc.message.list.key(),
