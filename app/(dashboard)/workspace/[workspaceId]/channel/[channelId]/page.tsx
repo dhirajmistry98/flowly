@@ -7,6 +7,7 @@ import { MessageList } from "./_components/MessageList";
 
 const ChannelPageMain = () => {
   const {channelId} = useParams<{channelId:string}>();
+  
   return (
     <div className="flex h-screen w-full">
       {/* Main Channel Area */}

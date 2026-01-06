@@ -25,6 +25,8 @@ export function MessageList() {
       cursor: pageParam,
       limit: 10,
     }),
+    queryKey:['message.list',channelId],
+    
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     select: (data) => ({

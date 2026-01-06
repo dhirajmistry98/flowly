@@ -10,6 +10,7 @@ export const router = {
   channel: {
     create: createChannel,
     list: listChannels,
+    get:
   },
   message: {
     create: createMessage,
