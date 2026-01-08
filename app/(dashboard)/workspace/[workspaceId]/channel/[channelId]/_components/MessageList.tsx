@@ -15,7 +15,6 @@ export function MessageList() {
   const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
-  const [newMessages, setNewMessages] = useState(false);
   const lastItemIdRef = useRef<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -124,10 +123,7 @@ export function MessageList() {
     const atBottom = isNearBottom(el);
     setIsAtBottom(atBottom);
 
-    // If user scrolled to bottom, clear new messages indicator
-    if (atBottom) {
-      setNewMessages(false);
-    }
+
 
     // Load more messages when scrolling up
     if (el.scrollTop <= 80 && hasNextPage && !isFetching) {
@@ -167,11 +163,8 @@ export function MessageList() {
             el.scrollTop = el.scrollHeight;
           }
         });
-        setNewMessages(false);
+        
         setIsAtBottom(true);
-      } else {
-        // Show button if user is scrolled up
-        setNewMessages(true);
       }
     }
 
@@ -185,7 +178,6 @@ export function MessageList() {
     bottomRef.current?.scrollIntoView({
       block: "end",
     });
-    setNewMessages(false);
     setIsAtBottom(true);
   };
 
