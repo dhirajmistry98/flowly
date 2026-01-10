@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { MessageItem } from "./message/MassageItem";
 import { orpc } from "@/lib/orpc";
 import { useParams } from "next/navigation";
@@ -24,8 +24,8 @@ export function MessageList() {
       cursor: pageParam,
       limit: 10,
     }),
-    queryKey:['message.list',channelId],
-    
+    queryKey: ["message.list", channelId],
+
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     select: (data) => ({
@@ -52,6 +52,10 @@ export function MessageList() {
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
+
+  const {
+    data: { user },
+  } = useSuspenseQuery(orpc.workspace.list.queryOptions());
 
   //scroll to the bottom when messages first load
   useEffect(() => {
@@ -123,8 +127,6 @@ export function MessageList() {
     const atBottom = isNearBottom(el);
     setIsAtBottom(atBottom);
 
-
-
     // Load more messages when scrolling up
     if (el.scrollTop <= 80 && hasNextPage && !isFetching) {
       const prevScrollHeight = el.scrollHeight;
@@ -163,7 +165,7 @@ export function MessageList() {
             el.scrollTop = el.scrollHeight;
           }
         });
-        
+
         setIsAtBottom(true);
       }
     }
@@ -199,7 +201,11 @@ export function MessageList() {
           </div>
         ) : (
           items?.map((message) => (
-            <MessageItem key={message.id} message={message} />
+            <MessageItem
+              key={message.id}
+              message={message}
+              currentUserId={user.id}
+            />
           ))
         )}
         <div ref={bottomRef}></div>
