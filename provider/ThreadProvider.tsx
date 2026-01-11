@@ -4,22 +4,49 @@ import { createContext, ReactNode, useContext, useState } from "react";
 
 interface ThreadContextType {
   selectedThreadId: string | null;
+  openThread: (messageId: string) => void;
+  closeThread: () => void;
+  toggleThread: (messageId: string) => void;
 }
 
 const ThreadContext = createContext<ThreadContextType | undefined>(undefined);
 
 export function ThreadProvider({ children }: { children: ReactNode }) {
-  const [selectedThreadId, setSelectedThreadId] = useState(null);
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openThread = (messageId: string) => {
+    setSelectedThreadId(messageId);
+    setIsOpen(true);
+  };
+
+  const closeThread = () => {
+    setSelectedThreadId(null);
+    setIsOpen(false);
+  };
+
+  const toggleThread = (messageId: string) => {
+      if (selectedThreadId === messageId && isOpen) {
+        closeThread();
+      } else {
+        openThread(messageId);
+      }
+  }
 
   const value: ThreadContextType = {
     selectedThreadId,
+    openThread,
+    closeThread,
+    toggleThread,
   };
+
   return (
     <ThreadContext.Provider value={value}>{children}</ThreadContext.Provider>
   );
 }
 
-export function useThreadContext() {
+export function useThread() {
   const context = useContext(ThreadContext);
 
   if (context === undefined) {
