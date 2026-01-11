@@ -3,6 +3,7 @@ import { MessageSquare, X } from "lucide-react";
 import Image from "next/image";
 import { ThreadReply } from "./ThreadReply";
 import { ThreadReplyForm } from "./ThreadReplyForm";
+import { useThread } from "@/provider/ThreadProvider";
 
 const Messages = [
   {
@@ -35,6 +36,8 @@ const Messages = [
   },
 ];
 export function ThreadSidebar() {
+  const { selectedThreadId,closeThread } = useThread();
+
   return (
     <div className="w-120 border-l flex flex-col h-full">
       {/* Header */}
@@ -44,7 +47,7 @@ export function ThreadSidebar() {
           <span>Thread</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon">
+          <Button onClick={closeThread} variant="outline" size="icon">
             <X className="size-4" />
           </Button>
         </div>
@@ -95,7 +98,7 @@ export function ThreadSidebar() {
       </div>
       {/* Thread reply form */}
       <div className="border-t p-4 bg-background sticky bottom-0">
-       <ThreadReplyForm threadId="" />
+       <ThreadReplyForm threadId={selectedThreadId!} />
       </div>
     </div>
   );

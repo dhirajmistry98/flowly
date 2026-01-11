@@ -10,21 +10,23 @@ interface iAppProps {
   message: Message;
   currentUserId: string;
 }
-export function MessageItem({ message , currentUserId}: iAppProps) {
+
+export function MessageItem({ message, currentUserId }: iAppProps) {
   const [isEditing, setIsEditing] = useState(false);
+  
   return (
-    <div className="flex space-x-3 p-3 rounded-lg group hover:bg-muted/50">
+    <div className="relative flex space-x-3 p-3 rounded-lg group hover:bg-muted/50">
       <Image
         src={getAvatar(message.authorAvatar, message.authorEmail)}
         alt="User Avatar"
         width={32}
         height={32}
-        className="size-8 rounded-lg"
+        className="size-8 rounded-lg shrink-0"
       />
-      <div className="flex-1 space-y1 min-w-0">
+      <div className="flex-1 space-y-1 min-w-0">
         <div className="flex items-center gap-x-2">
-          <p className="font-medium leading-none ">{message.authorName}</p>
-          <p className="text-xs text-muted-foreground leading-none ">
+          <p className="font-medium leading-none">{message.authorName}</p>
+          <p className="text-xs text-muted-foreground leading-none">
             {new Intl.DateTimeFormat("en-GB", {
               day: "numeric",
               month: "short",
@@ -37,11 +39,17 @@ export function MessageItem({ message , currentUserId}: iAppProps) {
         </div>
 
         {isEditing ? (
-          <EditMessage message={message} onCancel={() => setIsEditing(false)} onSave={() => setIsEditing(false)} />
+          <div className="mt-2">
+            <EditMessage
+              message={message}
+              onCancel={() => setIsEditing(false)}
+              onSave={() => setIsEditing(false)}
+            />
+          </div>
         ) : (
           <>
             <SafeContent
-              className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
+              className="text-sm break-words prose dark:prose-invert max-w-none mark:text-primary"
               content={JSON.parse(message.content)}
             />
             {message.imageUrl && (
@@ -51,14 +59,22 @@ export function MessageItem({ message , currentUserId}: iAppProps) {
                   alt="Message Attachment"
                   width={512}
                   height={512}
-                  className="rounded-md  max-h-80 w-auto object-contain"
+                  className="rounded-md max-h-80 w-auto object-contain"
                 />
               </div>
             )}
           </>
         )}
       </div>
-      <MessageHoverToolbar messageId={message.id} canEdit={message.authorId === currentUserId} onEdit={() => setIsEditing(true)} />
+      
+      {/* Only show toolbar when not editing */}
+      {!isEditing && (
+        <MessageHoverToolbar
+          messageId={message.id}
+          canEdit={message.authorId === currentUserId}
+          onEdit={() => setIsEditing(true)}
+        />
+      )}
     </div>
   );
 }
