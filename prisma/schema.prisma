@@ -45,7 +45,6 @@ model Message {
      // Thread relation
 
       parentMessage Message? @relation("MessageThread",fields: [threadId],references: [id],onDelete: Cascade)
-      parentMessageId   String?
       threadId          String?
       replies            Message[] @relation("MessageThread")
 }

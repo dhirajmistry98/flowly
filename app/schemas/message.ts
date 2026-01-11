@@ -4,6 +4,7 @@ export const createMassageSchema = z.object({
   channelId: z.string(),
   content:z.string(),
   imageUrl: z.url().optional(),
+  threadId: z.string().optional(),
 });
 
 export const  updateMassageSchema = z.object({
@@ -12,4 +13,5 @@ export const  updateMassageSchema = z.object({
 })
 
 export type updateMassageSchemaType = z.infer<typeof updateMassageSchema>
+
 export type createMassageSchemaType = z.infer<typeof createMassageSchema>

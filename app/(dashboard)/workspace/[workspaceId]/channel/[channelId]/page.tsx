@@ -9,6 +9,7 @@ import { orpc } from "@/lib/orpc";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThreadSidebar } from "./_components/thread/ThreadSidebar";
+import { ThreadProvider } from "@/provider/ThreadProvider";
 
 const ChannelPageMain = () => {
   const { channelId } = useParams<{ channelId: string }>();
@@ -54,8 +55,21 @@ const ChannelPageMain = () => {
         </div>
       </div>
       <ThreadSidebar/>
+
     </div>
+
   );
 };
 
-export default ChannelPageMain;
+
+
+
+const  ThisIsthechannelPage = () =>{
+  return (
+    <ThreadProvider>
+    <ChannelPageMain/>
+    </ThreadProvider>
+  )
+}
+
+export default ThisIsthechannelPage;

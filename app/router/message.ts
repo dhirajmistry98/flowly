@@ -33,6 +33,24 @@ export const createMessage = base
     if (!channel) {
       throw errors.FORBIDDEN();
     }
+    if (input.threadId) {
+      const parentMessage = await prisma.message.findFirst({
+        where: {
+          id: input.threadId,
+          channel: {
+            workspaceId: context.workspace.orgCode,
+          },
+        },
+      });
+
+      if (
+        !parentMessage ||
+        parentMessage.channelId !== input.channelId ||
+        parentMessage.threadId !== null
+      ) {
+        throw errors.BAD_REQUEST();
+      }
+    }
 
     const created = await prisma.message.create({
       data: {
@@ -43,6 +61,8 @@ export const createMessage = base
         authorEmail: context.user.email!,
         authorName: context.user.given_name ?? "John Doe",
         authorAvatar: getAvatar(context.user.picture, context.user.email!),
+        threadId: input.threadId,
+        
       },
     });
     return {
@@ -149,6 +169,7 @@ export const updateMessage = base
     if (message.authorId !== context.user.id) {
       throw errors.FORBIDDEN();
     }
+
     const updated = await prisma.message.update({
       where: {
         id: input.messageId,
