@@ -36,7 +36,8 @@ const Messages = [
   },
 ];
 export function ThreadSidebar() {
-  const {selectedThreadId} = useThread()
+
+  const { selectedThreadId,closeThread } = useThread();
   return (
     <div className="w-120 border-l flex flex-col h-full">
       {/* Header */}
@@ -46,7 +47,7 @@ export function ThreadSidebar() {
           <span>Thread</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon">
+          <Button onClick={closeThread} variant="outline" size="icon">
             <X className="size-4" />
           </Button>
         </div>
@@ -97,6 +98,7 @@ export function ThreadSidebar() {
       </div>
       {/* Thread reply form */}
       <div className="border-t p-4 bg-background sticky bottom-0">
+
        <ThreadReplyForm threadId={selectedThreadId}/>
       </div>
     </div>

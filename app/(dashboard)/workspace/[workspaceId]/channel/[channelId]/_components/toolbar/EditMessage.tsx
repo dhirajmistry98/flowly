@@ -27,6 +27,7 @@ interface EditMessageProps {
   onCancel: () => void;
   onSave: () => void;
 }
+
 export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
   const queryClient = useQueryClient();
   const form = useForm({
@@ -42,6 +43,7 @@ export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
       onSuccess: (updated) => {
         type MessagePage = { items: Message[]; nextCursor?: string };
         type InfiniteMessages = InfiniteData<MessagePage>;
+        
         queryClient.setQueryData<InfiniteMessages>(
           ["message.list", message.channelId],
           (old) => {
@@ -67,7 +69,7 @@ export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
         onSave();
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(error.message || "Failed to update message");
       },
     })
   );
@@ -75,9 +77,10 @@ export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
   const onSubmit = (data: updateMassageSchemaType) => {
     updateMutation.mutate(data);
   };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="content"
@@ -87,7 +90,7 @@ export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
                 <RichTextEditor
                   field={field}
                   sendButton={
-                    <div className="flex gap-4 items-center">
+                    <div className="flex gap-2 items-center">
                       <Button
                         type="button"
                         size="sm"
@@ -97,8 +100,12 @@ export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
                       >
                         Cancel
                       </Button>
-                      <Button disabled={updateMutation.isPending} size="sm" type="submit">
-                        {updateMutation.isPending ? 'Saving...':'Save'}
+                      <Button
+                        disabled={updateMutation.isPending}
+                        size="sm"
+                        type="submit"
+                      >
+                        {updateMutation.isPending ? "Saving..." : "Save"}
                       </Button>
                     </div>
                   }
