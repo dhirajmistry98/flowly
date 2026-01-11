@@ -91,10 +91,11 @@ export function ThreadSidebar() {
            <ThreadReply key={reply.id} message={reply}/>
          ))} 
         </div>
+        
       </div>
       {/* Thread reply form */}
       <div className="border-t p-4 bg-background sticky bottom-0">
-       <ThreadReplyForm/>
+       <ThreadReplyForm threadId="" />
       </div>
     </div>
   );
