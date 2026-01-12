@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  createMassageSchema,
-  createMassageSchemaType,
+  createMessageSchema,
+  createMessageSchemaType,
 } from "@/app/schemas/message";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 interface ThreadReplyFormProps{
   threadId: string;
+  
 }
 
 export function ThreadReplyForm({ threadId }: ThreadReplyFormProps) {
@@ -25,7 +26,7 @@ export function ThreadReplyForm({ threadId }: ThreadReplyFormProps) {
   const [editorKey, setEditorKey] = useState(0);
 
   const form = useForm({
-    resolver: zodResolver(createMassageSchema),
+    resolver: zodResolver(createMessageSchema),
     defaultValues: {
       content: "",
       channelId: channelId,
@@ -48,7 +49,7 @@ export function ThreadReplyForm({ threadId }: ThreadReplyFormProps) {
       }
     })
   )
-  function onSubmit(data: createMassageSchemaType) {
+  function onSubmit(data: createMessageSchemaType) {
     createMessageMutation.mutate({
       ...data,
       imageUrl: upload.stagedUrl ?? undefined,

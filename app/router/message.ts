@@ -1,11 +1,11 @@
-import z, { boolean } from "zod";
+import z from "zod";
 import { standardSecuritymiddleware } from "../middlewares/arcjet/standard";
 import { writeSecuritymiddleware } from "../middlewares/arcjet/write";
 import { requiredAuthMiddleware } from "../middlewares/auth";
 import { base } from "../middlewares/base";
 import { requiredWorkSpaceMiddleware } from "../middlewares/workspace";
 import prisma from "@/lib/db";
-import { createMassageSchema, updateMassageSchema } from "../schemas/message";
+import { createMessageSchema, updateMessageSchema } from "../schemas/message";
 import { getAvatar } from "@/lib/get-avatar";
 import { Message } from "@/lib/generated/prisma/client";
 import { readSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
@@ -21,7 +21,7 @@ export const createMessage = base
     summary: "Create a message",
     tags: ["Messages"],
   })
-  .input(createMassageSchema)
+  .input(createMessageSchema)
   .output(z.custom<Message>())
   .handler(async ({ input, context, errors }) => {
     const channel = await prisma.channel.findFirst({
@@ -62,7 +62,6 @@ export const createMessage = base
         authorName: context.user.given_name ?? "John Doe",
         authorAvatar: getAvatar(context.user.picture, context.user.email!),
         threadId: input.threadId,
-        
       },
     });
     return {
@@ -111,6 +110,7 @@ export const listMessages = base
     const messages = await prisma.message.findMany({
       where: {
         channelId: input.channelId,
+        threadId: null,
       },
       ...(input.cursor
         ? {
@@ -141,7 +141,7 @@ export const updateMessage = base
     summary: "Update a message",
     tags: ["Messages"],
   })
-  .input(updateMassageSchema)
+  .input(updateMessageSchema)
   .output(
     z.object({
       message: z.custom<Message>(),
@@ -181,5 +181,55 @@ export const updateMessage = base
     return {
       message: updated,
       canEdit: updated.authorId === context.user.id,
+    };
+  });
+
+export const ListThreadReplies = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkSpaceMiddleware)
+  .use(readSecuritymiddleware)
+  .use(standardSecuritymiddleware)
+  .route({
+    method: "GET",
+    path: "/messages/:messageId/thread",
+    summary: "List replies in a thread",
+    tags: ["Messages"],
+  })
+  .input(
+    z.object({
+      messageId: z.string(),
+    })
+  )
+  .output(
+    z.object({
+      parent: z.custom<Message>(),
+      messages: z.array(z.custom<Message>()),
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
+    const parentRow = await prisma.message.findFirst({
+      where: {
+        id: input.messageId,
+        channel: {
+          workspaceId: context.workspace.orgCode,
+        },
+      },
+    });
+
+    if (!parentRow) {
+      throw errors.NOT_FOUND();
+    }
+
+    // Fetch all thread replies
+    const replies = await prisma.message.findMany({
+      where: {
+        threadId: input.messageId,
+      },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    });
+
+    return {
+      parent: parentRow,
+      messages: replies,
     };
   });

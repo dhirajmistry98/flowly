@@ -1,6 +1,6 @@
 import {
-  updateMassageSchema,
-  updateMassageSchemaType,
+  updateMessageSchema,
+  updateMessageSchemaType,
 } from "@/app/schemas/message";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ interface EditMessageProps {
 export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(updateMassageSchema),
+    resolver: zodResolver(updateMessageSchema),
     defaultValues: {
       messageId: message.id,
       content: message.content,
@@ -74,7 +74,7 @@ export function EditMessage({ message, onCancel, onSave }: EditMessageProps) {
     })
   );
 
-  const onSubmit = (data: updateMassageSchemaType) => {
+  const onSubmit = (data: updateMessageSchemaType) => {
     updateMutation.mutate(data);
   };
 
