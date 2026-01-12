@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  createMassageSchema,
-  createMassageSchemaType,
+  createMessageSchema,
+  createMessageSchemaType,
 } from "@/app/schemas/message";
 import {
   Form,
@@ -45,7 +45,7 @@ export function MessageInputForm({ channelId, user }: iAppProps) {
   const upload = useAttachmentUpload();
 
   const form = useForm({
-    resolver: zodResolver(createMassageSchema),
+    resolver: zodResolver(createMessageSchema),
 
     defaultValues: {
       channelId: channelId,
@@ -148,7 +148,7 @@ export function MessageInputForm({ channelId, user }: iAppProps) {
     })
   );
 
-  function onSubmit(data: createMassageSchemaType) {
+  function onSubmit(data: createMessageSchemaType) {
     createMassageMutation.mutate({
       ...data,
       imageUrl: upload.stagedUrl ?? undefined,

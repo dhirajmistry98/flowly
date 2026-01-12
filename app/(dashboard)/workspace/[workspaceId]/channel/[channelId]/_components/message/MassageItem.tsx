@@ -49,7 +49,7 @@ export function MessageItem({ message, currentUserId }: iAppProps) {
         ) : (
           <>
             <SafeContent
-              className="text-sm break-words prose dark:prose-invert max-w-none mark:text-primary"
+              className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
               content={JSON.parse(message.content)}
             />
             {message.imageUrl && (

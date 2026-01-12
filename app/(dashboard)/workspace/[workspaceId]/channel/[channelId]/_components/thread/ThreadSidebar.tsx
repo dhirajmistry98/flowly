@@ -4,40 +4,21 @@ import Image from "next/image";
 import { ThreadReply } from "./ThreadReply";
 import { ThreadReplyForm } from "./ThreadReplyForm";
 import { useThread } from "@/provider/ThreadProvider";
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
+import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 
-const Messages = [
-  {
-    id: "1",
-    authorName: "Alice",
-    authorImage: "https://avatars.githubusercontent.com/u/170039520?v=4",
-    content: "Hello, how are you?",
-    createdAt: new Date(),
-  },
-  {
-    id: "2",
-    authorName: "Alice",
-    authorImage: "https://avatars.githubusercontent.com/u/170039520?v=4",
-    content: "Hello, how are you?",
-    createdAt: new Date(),
-  },
-  {
-    id: "3",
-    authorName: "Alice",
-    authorImage: "https://avatars.githubusercontent.com/u/170039520?v=4",
-    content: "Hello, how are you?",
-    createdAt: new Date(),
-  },
-  {
-    id: "4",
-    authorName: "Alice",
-    authorImage: "https://avatars.githubusercontent.com/u/170039520?v=4",
-    content: "Hello, how are you?",
-    createdAt: new Date(),
-  },
-];
 export function ThreadSidebar() {
 
   const { selectedThreadId,closeThread } = useThread();
+  const { data, isLoading } = useQuery(
+    orpc.message.thread.list.queryOptions({
+      input: {
+        messageId: selectedThreadId!,
+      },
+      enabled: Boolean(selectedThreadId),
+    })
+  );
   return (
     <div className="w-120 border-l flex flex-col h-full">
       {/* Header */}
@@ -54,52 +35,59 @@ export function ThreadSidebar() {
       </div>
       {/* main content area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 border-b bg-muted/20">
-          <div className="flex space-x-3 ">
-            <Image
-              src={Messages[0].authorImage}
-              alt="Author Image"
-              className="rounded-full size-8 shrink-0"
-              width={32}
-              height={32}
-            />
-            <div className="flex-1 space-y-1 min-w-0 ">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-sm ">
-                  {Messages[0].authorName}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {new Intl.DateTimeFormat("en-US", {
-                    hour: "numeric",
-                    minute: "numeric",
-                    hour12: true,
-                    day: "numeric",
-                  }).format(Messages[0].createdAt)}
-                </span>
+        {data && (
+          <>
+            <div className="p-4 border-b bg-muted/20">
+              <div className="flex space-x-3 ">
+                <Image
+                  src={data.parent.authorAvatar}
+                  alt="Author Image"
+                  className="rounded-full size-8 shrink-0"
+                  width={32}
+                  height={32}
+                />
+                <div className="flex-1 space-y-1 min-w-0 ">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-medium text-sm ">
+                      {data.parent.authorName}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Intl.DateTimeFormat("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                        day: "numeric",
+                      }).format(data.parent.createdAt)}
+                    </span>
+                  </div>
+
+                  <SafeContent
+                    className="text-sm break-word dark:prose-invert max-w-none"
+                    content={JSON.parse(data.parent.content)}
+                  />
+                </div>
               </div>
-              <p className="text-sm break-word dark:prose-invert max-w-none">
-                {Messages[0].content}
+            </div>
+            {/* Replies header */}
+            <div className="p-2">
+              <p className="text-xs text-muted-foreground mb-3 px-2">
+                {data.messages.length} replies
               </p>
             </div>
-          </div>
-        </div>
-  {/* Replies header */}
-        <div className="p-2">
-          <p className="text-xs text-muted-foreground mb-3 px-2">
-            {Messages.length} replies
-          </p>
-        </div>
-        <div className="space-y-1 ">
-         {Messages.map((reply) => (
-           <ThreadReply key={reply.id} message={reply}/>
-         ))} 
-        </div>
-        
+            <div className="space-y-1 ">
+              {data.messages.map((reply) => (
+                <ThreadReply key={reply.id} message={reply} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
       {/* Thread reply form */}
       <div className="border-t p-4 bg-background sticky bottom-0">
+ Updated upstream
 
-       <ThreadReplyForm threadId={selectedThreadId}/>
+        <ThreadReplyForm threadId={selectedThreadId!} />
+Stashed changes
       </div>
     </div>
   );

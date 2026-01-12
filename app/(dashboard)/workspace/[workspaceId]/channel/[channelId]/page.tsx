@@ -13,7 +13,7 @@ import { ThreadProvider, useThread } from "@/provider/ThreadProvider";
 
 const ChannelPageMain = () => {
   const { channelId } = useParams<{ channelId: string }>();
-  const {isOpen} = useThread()
+  const { isOpen } = useThread();
   const { data, error, isLoading } = useQuery(
     orpc.channel.get.queryOptions({
       input: {
@@ -56,9 +56,7 @@ const ChannelPageMain = () => {
         </div>
       </div>
 
-     { isOpen  && (
-      <ThreadSidebar/>
-     )}
+      {isOpen && <ThreadSidebar />}
     </div>
   );
 };

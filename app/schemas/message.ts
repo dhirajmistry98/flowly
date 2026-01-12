@@ -1,17 +1,17 @@
 import z from "zod";
 
-export const createMassageSchema = z.object({
+export const createMessageSchema = z.object({
   channelId: z.string(),
   content:z.string(),
   imageUrl: z.url().optional(),
   threadId: z.string().optional(),
 });
 
-export const  updateMassageSchema = z.object({
+export const  updateMessageSchema = z.object({
   messageId: z.string(),
   content:z.string(),
 })
 
-export type updateMassageSchemaType = z.infer<typeof updateMassageSchema>
+export type updateMessageSchemaType = z.infer<typeof updateMessageSchema>
 
-export type createMassageSchemaType = z.infer<typeof createMassageSchema>
+export type createMessageSchemaType = z.infer<typeof createMessageSchema>
