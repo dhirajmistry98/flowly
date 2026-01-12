@@ -10,6 +10,7 @@ import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 
 export function ThreadSidebar() {
 
+
   const { selectedThreadId,closeThread } = useThread();
   const { data, isLoading } = useQuery(
     orpc.message.thread.list.queryOptions({
@@ -19,6 +20,8 @@ export function ThreadSidebar() {
       enabled: Boolean(selectedThreadId),
     })
   );
+  const { selectedThreadId,closeThread } = useThread();
+
   return (
     <div className="w-120 border-l flex flex-col h-full">
       {/* Header */}
@@ -84,10 +87,7 @@ export function ThreadSidebar() {
       </div>
       {/* Thread reply form */}
       <div className="border-t p-4 bg-background sticky bottom-0">
- Updated upstream
-
-        <ThreadReplyForm threadId={selectedThreadId!} />
-Stashed changes
+       <ThreadReplyForm threadId={selectedThreadId!} />
       </div>
     </div>
   );
