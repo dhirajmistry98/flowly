@@ -20,7 +20,6 @@ export function ThreadSidebar() {
       enabled: Boolean(selectedThreadId),
     })
   );
-  const { selectedThreadId,closeThread } = useThread();
 
   return (
     <div className="w-120 border-l flex flex-col h-full">
