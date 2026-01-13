@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
+import { ThreadSidebarSkeleton } from "./ThreadSidebarSkeleton";
 
 interface ThreadSidebarProps {
   user: KindeUser<Record<string, unknown>>;
@@ -15,6 +16,7 @@ interface ThreadSidebarProps {
 
 export function ThreadSidebar({ user }: ThreadSidebarProps) {
   const { selectedThreadId, closeThread } = useThread();
+  
   const { data, isLoading } = useQuery(
     orpc.message.thread.list.queryOptions({
       input: {
@@ -24,10 +26,13 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
     })
   );
 
+  if (isLoading) {
+   return <ThreadSidebarSkeleton/>
+  }
   return (
     <div className="w-120 border-l flex flex-col h-full">
       {/* Header */}
-      <div className="border-b h-14 px-4 flex items-center justify-between ">
+      <div className="border-b h-14 px-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageSquare className="size-4" />
           <span>Thread</span>
