@@ -137,6 +137,7 @@ export function MessageList() {
         el.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
       });
     }
+        setIsAtBottom(isNearBottom(el))
   };
 
   const items = useMemo(() => {
@@ -179,6 +180,7 @@ export function MessageList() {
 
     bottomRef.current?.scrollIntoView({
       block: "end",
+      behavior:'smooth',
     });
     setIsAtBottom(true);
   };
