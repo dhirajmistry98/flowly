@@ -32,6 +32,17 @@ export function ThreadReply({ message }: ThreadReplyProps) {
           className="text-sm break-word dark:prose-invert marker:text-primary max-w-none"
           content={JSON.parse(message.content)}
         />
+        {message.imageUrl && (
+          <div className="mt-2">
+            <Image
+              src={message.imageUrl}
+              alt="Message Attachment"
+              width={512}
+              height={512}
+              className="rounded-md max-h-80 w-auto object-contain"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
