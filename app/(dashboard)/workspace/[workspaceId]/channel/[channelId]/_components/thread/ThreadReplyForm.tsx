@@ -11,12 +11,17 @@ import { useForm } from "react-hook-form";
 import { MessageComposer } from "../message/MessageComposer";
 import { useAttachmentUpload } from "@/hooks/use-attachment-upload";
 import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
 import { Message } from "@/lib/generated/prisma/client";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { getAvatar } from "@/lib/get-avatar";
+import { MessagelistItem } from "@/lib/types";
 
 interface ThreadReplyFormProps {
   threadId: string;
@@ -51,9 +56,15 @@ export function ThreadReplyForm({ threadId, user }: ThreadReplyFormProps) {
             messageId: threadId,
           },
         });
+        type MessagePage = {
+          items: Array<MessagelistItem>;
+          nextCursor?: string;
+        };
         await queryClient.cancelQueries({
           queryKey: listOptions.queryKey,
         });
+
+        type InfiniteMessages = InfiniteData<MessagePage>;
 
         const previous = queryClient.getQueryData(listOptions.queryKey);
 
@@ -78,14 +89,35 @@ export function ThreadReplyForm({ threadId, user }: ThreadReplyFormProps) {
             messages: [...old.messages, optimistic],
           };
         });
+
+        //optimistically bump reliesCount in main message
+
+        queryClient.setQueryData<InfiniteMessages>(
+          ["message.list", channelId],
+          (old) => {
+            if (!old) return old;
+
+            const pages = old.pages.map((page) => ({
+              ...page,
+              items: page.items.map((m) =>
+                m.id === threadId
+                  ? { ...m, repliesCount: m.repliesCount + 1 }
+                  : m,
+              ),
+            }));
+
+            return {...old,pages}
+          },
+        );
+
         return {
           listOptions,
           previous,
         };
       },
-      onSuccess: (_data,_vars,ctx) => {
-        queryClient.invalidateQueries({queryKey:ctx.listOptions.queryKey})
-        
+      onSuccess: (_data, _vars, ctx) => {
+        queryClient.invalidateQueries({ queryKey: ctx.listOptions.queryKey });
+
         form.reset({ channelId, content: "", threadId });
         upload.Clear();
         setEditorKey((prev) => prev + 1);
@@ -103,8 +135,9 @@ export function ThreadReplyForm({ threadId, user }: ThreadReplyFormProps) {
 
         return toast.error("Something went wrong!");
       },
-    })
+    }),
   );
+
   function onSubmit(data: createMessageSchemaType) {
     createMessageMutation.mutate({
       ...data,
@@ -126,6 +159,7 @@ export function ThreadReplyForm({ threadId, user }: ThreadReplyFormProps) {
                   upload={upload}
                   key={editorKey}
                   onSubmit={() => onSubmit(form.getValues())}
+                  isSubmitting={createMessageMutation.isPending}
                 />
               </FormControl>
             </FormItem>
