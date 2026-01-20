@@ -98,6 +98,9 @@ importers:
       dompurify:
         specifier: ^3.3.1
         version: 3.3.1
+      frimousse:
+        specifier: ^0.3.0
+        version: 0.3.0(react@19.2.1)(typescript@5.9.3)
       html-react-parser:
         specifier: ^5.2.11
         version: 5.2.11(@types/react@19.2.7)(react@19.2.1)
@@ -2540,6 +2543,15 @@ packages:
       react:
         optional: true
       react-dom:
+        optional: true
+
+  frimousse@0.3.0:
+    resolution: {integrity: sha512-kO6LMoKY/cLAYEhXXtqLRaLIE6L/DagpFPrUZaLv3LsUa1/8Iza3HhwZcgN8eZ+weXnhv69eoclNUPohcCa/IQ==}
+    peerDependencies:
+      react: ^18 || ^19
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      typescript:
         optional: true
 
   fsevents@2.3.3:
@@ -6383,6 +6395,12 @@ snapshots:
     optionalDependencies:
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
+
+  frimousse@0.3.0(react@19.2.1)(typescript@5.9.3):
+    dependencies:
+      react: 19.2.1
+    optionalDependencies:
+      typescript: 5.9.3
 
   fsevents@2.3.3:
     optional: true
