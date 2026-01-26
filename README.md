@@ -35,18 +35,3 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-
-KINDE_CLIENT_ID=5fcf359b359d4e139778d115f4661608
-KINDE_CLIENT_SECRET=fLh4HsV5okrga2JJEqBRey8hzM5un2i7Rg0OhH5hG0lk0GVmV8K6
-KINDE_ISSUER_URL=https://flowly-dev.au.kinde.com
-KINDE_SITE_URL=http://localhost:3000
-KINDE_POST_LOGOUT_REDIRECT_URL=http://localhost:3000
-KINDE_POST_LOGIN_REDIRECT_URL=http://localhost:3000/workspace
-
-
-KINDE_DOMAIN=https://flowly-dev.au.kinde.com
-KINDE_MANAGEMENT_CLIENT_ID=806528c7da1b4d8fba2e94ba8ad6a403
-KINDE_MANAGEMENT_CLIENT_SECRET=uJEJL3l4vXeVRkaa0rLPJQmyxkyEcEkZa2nrr2zaQMudVFS
-
-ARCJET_KEY=ajkey_01kd2e8ejzee6anmtdcrky4wt2
-
