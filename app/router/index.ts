@@ -22,7 +22,7 @@ export const router = {
     list:listMessages,
     update: updateMessage,
     reaction:{
-       toggle:toggleReaction
+       toggle: toggleReaction
     },
     thread:{
       list:ListThreadReplies,
