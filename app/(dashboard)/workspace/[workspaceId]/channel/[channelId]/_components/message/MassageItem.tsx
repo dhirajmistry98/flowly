@@ -84,7 +84,8 @@ export function MessageItem({ message, currentUserId }: iAppProps) {
             )}
 
              {/* Reactions */}
-            <ReactionsBar/> 
+            <ReactionsBar messageId={message.id}  reactions={message.reactions}/> 
+
             {message.repliesCount > 0 && (
               <button
                 type="button"

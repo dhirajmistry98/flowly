@@ -158,6 +158,12 @@ export const listMessages = base
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       include: {
         _count: { select: { replies: true } },
+        MessageReaction:{
+          select:{
+            emoji: true,
+            userId: true
+          }
+        }
       },
     });
 
@@ -174,6 +180,13 @@ export const listMessages = base
       channelId: m.channelId,
       threadId: m.threadId,
       repliesCount: m._count.replies,
+      reactions: groupReactions(
+       (m.MessageReaction).map((r)=>({
+        emoji: r.emoji,
+        userId: r.userId
+       })),
+       context.user.id
+      )
     }));
     const nextCursor =
       messages.length === limit ? messages[messages.length - 1].id : undefined;
