@@ -28,7 +28,7 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
       },
 
       enabled: Boolean(selectedThreadId),
-    })
+    }),
   );
 
   const messageCount = data?.messages.length ?? 0;
@@ -184,7 +184,11 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
                 </p>
                 <div className="space-y-1 ">
                   {data.messages.map((reply) => (
-                    <ThreadReply key={reply.id} message={reply} />
+                    <ThreadReply
+                      key={reply.id}
+                      message={reply}
+                      selectedThreadId={selectedThreadId!}
+                    />
                   ))}
                 </div>
               </div>
@@ -193,14 +197,14 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
           )}
         </div>
         {!isAtBottom && (
-           <Button
-          type="button"
-          size="sm"
-          onClick={scrollToBottom}
-          className="absolute bottom-4 right-5 z-20 size-10 rounded-full hover:shadow-xl transition-all duration-200"
-        >
-          <ChevronDown className="size-4" />
-        </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={scrollToBottom}
+            className="absolute bottom-4 right-5 z-20 size-10 rounded-full hover:shadow-xl transition-all duration-200"
+          >
+            <ChevronDown className="size-4" />
+          </Button>
         )}
       </div>
       {/* Thread reply form */}

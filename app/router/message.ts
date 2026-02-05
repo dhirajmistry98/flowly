@@ -158,12 +158,12 @@ export const listMessages = base
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       include: {
         _count: { select: { replies: true } },
-        MessageReaction:{
-          select:{
+        MessageReaction: {
+          select: {
             emoji: true,
-            userId: true
-          }
-        }
+            userId: true,
+          },
+        },
       },
     });
 
@@ -181,12 +181,12 @@ export const listMessages = base
       threadId: m.threadId,
       repliesCount: m._count.replies,
       reactions: groupReactions(
-       (m.MessageReaction).map((r)=>({
-        emoji: r.emoji,
-        userId: r.userId
-       })),
-       context.user.id
-      )
+        m.MessageReaction.map((r) => ({
+          emoji: r.emoji,
+          userId: r.userId,
+        })),
+        context.user.id,
+      ),
     }));
     const nextCursor =
       messages.length === limit ? messages[messages.length - 1].id : undefined;
@@ -269,8 +269,8 @@ export const ListThreadReplies = base
   )
   .output(
     z.object({
-      parent: z.custom<Message>(),
-      messages: z.array(z.custom<Message>()),
+      parent: z.custom<MessagelistItem>(),
+      messages: z.array(z.custom<MessagelistItem>()),
     }),
   )
   .handler(async ({ input, context, errors }) => {
@@ -281,23 +281,91 @@ export const ListThreadReplies = base
           workspaceId: context.workspace.orgCode,
         },
       },
+      include: {
+        _count: {
+          select: {
+            replies: true,
+          },
+        },
+        MessageReaction: {
+          select: {
+            emoji: true,
+            userId: true,
+          },
+        },
+      },
     });
 
     if (!parentRow) {
       throw errors.NOT_FOUND();
     }
 
-    // Fetch all thread replies
-    const replies = await prisma.message.findMany({
+    // Fetch messagesQuery with replies
+    const messagesQuery = await prisma.message.findMany({
       where: {
         threadId: input.messageId,
       },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      include: {
+        _count: {
+          select: {
+            replies: true,
+          },
+        },
+        MessageReaction: {
+          select: {
+            emoji: true,
+            userId: true,
+          },
+        },
+      },
     });
 
+    const parent: MessagelistItem = {
+      id: parentRow.id,
+      content: parentRow.content,
+      imageUrl: parentRow.imageUrl,
+      authorAvatar: parentRow.authorAvatar,
+      authorEmail: parentRow.authorEmail,
+      authorId: parentRow.authorId,
+      authorName: parentRow.authorName,
+      channelId: parentRow.channelId,
+      createdAt: parentRow.createdAt,
+      updatedAt: parentRow.updatedAt,
+      threadId: parentRow.threadId,
+      repliesCount: parentRow._count.replies,
+      reactions: groupReactions(
+        parentRow.MessageReaction.map((r) => ({
+          emoji: r.emoji,
+          userId: r.userId,
+        })),
+        context.user.id
+      ),
+    };
+    const message: MessagelistItem[] = messagesQuery.map((m) => ({
+      id: m.id,
+      content: m.content,
+      imageUrl: m.imageUrl,
+      authorAvatar: m.authorAvatar,
+      authorEmail: m.authorEmail,
+      authorId: m.authorId,
+      authorName: m.authorName,
+      channelId: m.channelId,
+      createdAt: m.createdAt,
+      updatedAt: m.updatedAt,
+      threadId: m.threadId,
+      repliesCount: m._count.replies,
+      reactions: groupReactions(
+        m.MessageReaction.map((r) => ({
+          emoji: r.emoji,
+          userId: r.userId,
+        })),
+        context.user.id
+      ),
+    }));
     return {
-      parent: parentRow,
-      messages: replies,
+      parent,
+      message,
     };
   });
 

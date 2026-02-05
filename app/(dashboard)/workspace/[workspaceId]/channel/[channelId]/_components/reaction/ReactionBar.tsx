@@ -85,11 +85,19 @@ export function ReactionsBar({
             pages,
           };
         });
+
+        return{
+          previous,
+          listKey,
+        }
       },
       onSuccess: () => {
         return toast.success("Emoji Added!");
       },
-      onError: () => {
+      onError: (_err,_vars,ctx) => {
+        if (ctx?.previous && ctx.listKey) {
+          queryClient.setQueryData(ctx.listKey,ctx.previous)
+        }
         return toast.error("Emoji not added");
       },
     }),
