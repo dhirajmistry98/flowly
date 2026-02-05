@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { MessagelistItem } from "@/lib/types";
-import { count } from "console";
 
 type ThreadContext = { type: "thread"; threadId: string };
 type ListContext = { type: "list"; channelId: string };
@@ -85,11 +84,18 @@ export function ReactionsBar({
             pages,
           };
         });
+        return {
+          previous,
+          listKey,
+        };
       },
       onSuccess: () => {
         return toast.success("Emoji Added!");
       },
-      onError: () => {
+      onError: (_err, _vars, ctx) => {
+        if (ctx?.previous && ctx.listKey) {
+          queryClient.setQueryData(ctx.listKey, ctx.previous);
+        }
         return toast.error("Emoji not added");
       },
     }),
