@@ -150,9 +150,9 @@ export const listMessages = base
       },
       ...(input.cursor
         ? {
-            cursor: { id: input.cursor },
-            skip: 1,
-          }
+          cursor: { id: input.cursor },
+          skip: 1,
+        }
         : {}),
       take: limit,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
@@ -365,7 +365,7 @@ export const ListThreadReplies = base
     }));
     return {
       parent,
-      message,
+      messages: message,
     };
   });
 

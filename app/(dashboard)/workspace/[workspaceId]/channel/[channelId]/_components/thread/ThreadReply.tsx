@@ -1,5 +1,4 @@
 import { SafeContent } from "@/components/rich-text-editor/SafeContent";
-import { Message } from "@/lib/generated/prisma/client";
 import Image from "next/image";
 import { ReactionsBar } from "../reaction/ReactionBar";
 import { MessagelistItem } from "@/lib/types";
