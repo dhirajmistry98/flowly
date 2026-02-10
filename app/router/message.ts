@@ -179,7 +179,7 @@ export const listMessages = base
       authorName: m.authorName,
       channelId: m.channelId,
       threadId: m.threadId,
-      repliesCount: m._count.replies,
+      replyCount: m._count.replies,
       reactions: groupReactions(
         m.MessageReaction.map((r) => ({
           emoji: r.emoji,
@@ -333,7 +333,7 @@ export const ListThreadReplies = base
       createdAt: parentRow.createdAt,
       updatedAt: parentRow.updatedAt,
       threadId: parentRow.threadId,
-      repliesCount: parentRow._count.replies,
+      replyCount: parentRow._count.replies,
       reactions: groupReactions(
         parentRow.MessageReaction.map((r) => ({
           emoji: r.emoji,
@@ -354,7 +354,7 @@ export const ListThreadReplies = base
       createdAt: m.createdAt,
       updatedAt: m.updatedAt,
       threadId: m.threadId,
-      repliesCount: m._count.replies,
+      replyCount: m._count.replies,
       reactions: groupReactions(
         m.MessageReaction.map((r) => ({
           emoji: r.emoji,

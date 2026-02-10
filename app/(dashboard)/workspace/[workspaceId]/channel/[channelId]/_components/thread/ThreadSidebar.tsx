@@ -10,6 +10,7 @@ import { SafeContent } from "@/components/rich-text-editor/SafeContent";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { ThreadSidebarSkeleton } from "./ThreadSidebarSkeleton";
 import { useEffect, useRef, useState } from "react";
+import { ReactionsBar } from "../reaction/ReactionBar";
 
 interface ThreadSidebarProps {
   user: KindeUser<Record<string, unknown>>;
@@ -28,7 +29,7 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
       },
 
       enabled: Boolean(selectedThreadId),
-    }),
+    })
   );
 
   const messageCount = data?.messages.length ?? 0;
@@ -174,6 +175,22 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
                       className="text-sm break-word dark:prose-invert max-w-none"
                       content={JSON.parse(data.parent.content)}
                     />
+                    {data.parent.imageUrl && (
+                      <div className="mt-2">
+                        <Image
+                          src={data.parent.imageUrl}
+                          alt="Message Attachment"
+                          width={512}
+                          height={512}
+                          className="rounded-md max-h-80 w-auto object-contain"
+                        />
+                      </div>
+                    )}
+                    <ReactionsBar
+                      messageId={data.parent.id}
+                      reactions={data.parent.reactions}
+                      context={{ type: "thread", threadId: selectedThreadId! }}
+                    />
                   </div>
                 </div>
               </div>
@@ -184,11 +201,7 @@ export function ThreadSidebar({ user }: ThreadSidebarProps) {
                 </p>
                 <div className="space-y-1 ">
                   {data.messages.map((reply) => (
-                    <ThreadReply
-                      key={reply.id}
-                      message={reply}
-                      selectedThreadId={selectedThreadId!}
-                    />
+                    <ThreadReply selectedThread={selectedThreadId!} key={reply.id} message={reply} />
                   ))}
                 </div>
               </div>

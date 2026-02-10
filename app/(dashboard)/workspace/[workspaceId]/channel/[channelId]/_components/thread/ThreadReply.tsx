@@ -5,9 +5,9 @@ import { MessagelistItem } from "@/lib/types";
 
 interface ThreadReplyProps {
   message: MessagelistItem;
-  selectedThreadId: string;
+  selectedThread:string
 }
-export function ThreadReply({ message,selectedThreadId}: ThreadReplyProps) {
+export function ThreadReply({ message ,selectedThread}: ThreadReplyProps) {
   return (
     <div className="flex space-x-3 p-3 hover:bg-muted/30 rounded-lg">
       <Image
@@ -45,10 +45,7 @@ export function ThreadReply({ message,selectedThreadId}: ThreadReplyProps) {
             />
           </div>
         )}
-        <ReactionsBar context={{
-          type:'thread',
-          threadId: selectedThreadId
-        }}
+        <ReactionsBar context={{type:'thread',threadId:selectedThread}}
         reactions={message.reactions}
         messageId={message.id}
         />

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { MessagelistItem } from "@/lib/types";
-import { count } from "console";
 
 type ThreadContext = { type: "thread"; threadId: string };
 type ListContext = { type: "list"; channelId: string };
@@ -22,6 +21,11 @@ interface ReactionsBarProps {
 }
 type MessagePage = {
   items: MessagelistItem[];
+  nextCursor?: string;
+};
+type ThreadPage = {
+  parent: MessagelistItem;
+  messages: MessagelistItem[];
   nextCursor?: string;
 };
 
@@ -36,9 +40,67 @@ export function ReactionsBar({
   const toggleMutation = useMutation(
     orpc.message.reaction.toggle.mutationOptions({
       onMutate: async (vars: { messageId: string; emoji: string }) => {
+        const bump = (rxns: GroupedReactionSchemaType[]) => {
+          const found = rxns.find((r) => r.emoji === vars.emoji);
+
+          if (found) {
+            const dec = found.count - 1;
+
+            return dec <= 0
+              ? rxns.filter((r) => r.emoji !== found.emoji)
+              : rxns.map((r) =>
+                r.emoji === found.emoji
+                  ? { ...r, count: dec, reactedByMe: false }
+                  : r,
+              );
+          }
+          return [...rxns, { emoji: vars.emoji, count: 1, reactedByMe: true }];
+        };
+
         const isThread = context && context.type === "thread";
+
         if (isThread) {
-          console.log("this is a thread");
+          const listOptions = orpc.message.thread.list.queryOptions({
+            input: {
+              messageId: context.threadId,
+            },
+          });
+
+          await queryClient.cancelQueries({ queryKey: listOptions.queryKey });
+
+          const prevThread = queryClient.getQueryData(listOptions.queryKey);
+
+          queryClient.setQueryData<ThreadPage>(
+            listOptions.queryKey,
+            (old) => {
+              if (!old) return old;
+
+              if (vars.messageId === context.threadId) {
+                return {
+                  ...old,
+                  parent: {
+                    ...old.parent,
+                    reactions: bump(old.parent.reactions),
+                  },
+                };
+              }
+
+              // If reacting to a reply message
+              return {
+                ...old,
+                messages: old.messages.map((m) =>
+                  m.id === vars.messageId
+                    ? { ...m, reactions: bump(m.reactions) }
+                    : m,
+                ),
+              };
+            },
+          );
+
+          return {
+            prevThread,
+            threadQueryKey: listOptions.queryKey,
+          };
         }
         const listKey = ["message.list", channelId];
         await queryClient.cancelQueries({ queryKey: listKey });
@@ -53,27 +115,7 @@ export function ReactionsBar({
 
               const current = m.reactions;
 
-              const existing = current.find((r) => r.emoji === vars.emoji);
-              let next: GroupedReactionSchemaType[];
-              if (existing) {
-                const dec = existing.count - 1;
-
-                if (dec <= 0) {
-                  next = current.filter((r) => r.emoji !== existing.emoji);
-                } else {
-                  next = current.map((r) =>
-                    r.emoji === existing.emoji
-                      ? { ...r, count: dec, reactedByMe: false }
-                      : r,
-                  );
-                }
-              } else {
-                next = [
-                  ...current,
-                  { emoji: vars.emoji, count: 1, reactedByMe: true },
-                ];
-              }
-
+              const next = bump(current);
               return {
                 ...m,
                 reactions: next,
@@ -85,18 +127,20 @@ export function ReactionsBar({
             pages,
           };
         });
-
-        return{
+        return {
           previous,
           listKey,
-        }
+        };
       },
       onSuccess: () => {
         return toast.success("Emoji Added!");
       },
-      onError: (_err,_vars,ctx) => {
+      onError: (_err, _vars, ctx) => {
+        if (ctx?.threadQueryKey && ctx.prevThread) {
+          queryClient.setQueryData(ctx.threadQueryKey, ctx.prevThread);
+        }
         if (ctx?.previous && ctx.listKey) {
-          queryClient.setQueryData(ctx.listKey,ctx.previous)
+          queryClient.setQueryData(ctx.listKey, ctx.previous);
         }
         return toast.error("Emoji not added");
       },
