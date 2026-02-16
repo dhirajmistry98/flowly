@@ -4,7 +4,13 @@ import { base } from "../middlewares/base";
 import { requiredWorkSpaceMiddleware } from "../middlewares/workspace";
 import prisma from "@/lib/db";
 import { jsonToMarkdown } from "@/lib/json.markdown";
-import {streamText} from "ai"
+import {streamText} from "ai";
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+
+
+const openrouter = createOpenRouter({
+  apiKey: process.env.LLM_KEY,
+});
 
 export const generateThreadSummary = base
   .use(requiredAuthMiddleware)
@@ -85,6 +91,6 @@ export const generateThreadSummary = base
 
 
     const result  = streamText({
-      
+
     })
   }); 

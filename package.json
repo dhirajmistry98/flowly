@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@kinde-oss/kinde-auth-nextjs": "^2.11.0",
     "@kinde/management-api-js": "^0.14.0",
+    "@openrouter/ai-sdk-provider": "^2.2.3",
     "@orpc/client": "^1.13.0",
     "@orpc/server": "^1.13.0",
     "@orpc/tanstack-query": "^1.13.0",
