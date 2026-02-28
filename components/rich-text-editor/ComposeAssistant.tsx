@@ -1,23 +1,25 @@
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Sparkle } from "lucide-react";
+import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { eventIteratorToStream } from "@orpc/server";
 import { client } from "@/lib/orpc";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
 import { MessageResponse } from "@/components/ai-elements/message";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface SummarizeThreadProps {
-  messageId: string;
+interface ComposeAssistantProps {
+  content: string;
+  onAccept: (markdown: string) => void;
 }
 
-export function SummarizeThread({ messageId }: SummarizeThreadProps) {
+export function ComposeAssistant({ content, onAccept }: ComposeAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const contentRef = useRef(content);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
   const {
     messages,
     status,
@@ -27,31 +29,27 @@ export function SummarizeThread({ messageId }: SummarizeThreadProps) {
     stop,
     clearError,
   } = useChat({
-    id: `thread-summary:${messageId}`,
+    id: `compose-assistant`,
     transport: {
       async sendMessages(options) {
         return eventIteratorToStream(
-          await client.ai.thread.summary.generate(
-            {
-              messageId: messageId,
-            },
+          await client.ai.compose.generate(
+            { content: contentRef.current },
             { signal: options.abortSignal },
           ),
         );
       },
       reconnectToStream() {
-        throw new Error();
+        throw new Error("Unsupported");
       },
     },
   });
   const lastAssistant = messages.findLast((m) => m.role === "assistant");
-
-  const SummaryText =
+  const ComposeText =
     lastAssistant?.parts
-      .filter((p) => p.type === "text")
+      ?.filter((p) => p.type === "text")
       .map((p) => p.text)
       .join("\n\n") ?? "";
-
   function handleOpenChange(nextIsOpen: boolean) {
     setIsOpen(nextIsOpen);
     if (nextIsOpen) {
@@ -59,13 +57,14 @@ export function SummarizeThread({ messageId }: SummarizeThreadProps) {
       if (status !== "ready" || hasAssistantMessage) {
         return;
       }
-      sendMessage({ text: "Summarize this thread" });
+      sendMessage({ text: "Compose" });
     } else {
       stop();
       clearError();
       setMessages([]);
     }
   }
+
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
@@ -77,16 +76,16 @@ export function SummarizeThread({ messageId }: SummarizeThreadProps) {
         >
           <span className="flex items-center gap-1.5">
             <Sparkle className="size-3.5" />
-            <span className="text-xs font-medium">Summarize</span>
+            <span className="text-xs font-medium">Compose</span>
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-100 py-0" align="end">
+      <PopoverContent className="w-100 py-0">
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex items-center justify-center rounded-full bg-linear-to-r from-violet-600 to-fuchsia-600 px-4 py-1.5 text-white gap-1.5">
               <Sparkle className="size-3.5" />
-              <span className="text-sm font-medium">Summarize Thread</span>
+              <span className="text-sm font-medium">Compose Assistant</span>
             </span>
           </div>
           {status === "streaming" && (
@@ -113,14 +112,19 @@ export function SummarizeThread({ messageId }: SummarizeThreadProps) {
                 onClick={() => {
                   clearError();
                   setMessages([]);
-                  sendMessage({ text: "Summarize this thread" });
+                  sendMessage({ text: "Compose" });
                 }}
               >
                 Try Again
               </Button>
             </div>
-          ) : SummaryText ? (
-            <MessageResponse parseIncompleteMarkdown={status !== "ready"}  className="text-sm text-gray-500">{SummaryText}</MessageResponse>
+          ) : ComposeText ? (
+            <MessageResponse
+              parseIncompleteMarkdown={status !== "ready"}
+              className="text-sm text-gray-500"
+            >
+              {ComposeText}
+            </MessageResponse>
           ) : status === "submitted" || status === "streaming" ? (
             <div className="space-y-2">
               <Skeleton className="h-4 w-3/5" />
@@ -129,9 +133,40 @@ export function SummarizeThread({ messageId }: SummarizeThreadProps) {
             </div>
           ) : (
             <div className="text-sm text-muted-foreground ">
-              Click Summarize to generate
+              Click Compose to generate
             </div>
           )}
+        </div>
+
+        <div className="flex items-center justify-end gap-3 border-t px-3 py-2 bg-muted/30">
+          <Button
+            onClick={() => {
+              stop();
+              setIsOpen(false);
+              setMessages([]);
+              clearError();
+            }}
+            type="button"
+            size="sm"
+            variant="outline"
+          >
+            Decline
+          </Button>
+          <Button
+            onClick={() => {
+              if (!ComposeText) return;
+              onAccept?.(ComposeText);
+              stop();
+              setMessages([]);
+              clearError();
+              setIsOpen(false);
+            }}
+            disabled={!ComposeText}
+            type="button"
+            size="sm"
+          >
+            Accept
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

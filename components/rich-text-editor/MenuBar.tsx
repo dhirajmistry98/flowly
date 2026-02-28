@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import { ComposeAssistant } from "./ComposeAssistant";
+import { markdownToJson } from "@/lib/markdown-to-json";
 
 interface MenuBarProps {
   editor: Editor | null;
@@ -44,6 +46,15 @@ export function MenuBar({ editor }: MenuBarProps) {
     return null;
   }
 
+  const handleAcceptCompose = (markdown: string) => {
+   try {
+ const json =  markdownToJson(markdown);
+ editor.commands.setContent(json);
+   } catch (error) {
+    console.error('Error parsing markdown to JSON:', error);
+   }
+  };
+
   return (
     <div className="border border-input border-t-0 border-x-0 rounded-t-lg p-2 pg-card flex flex-wrap gap-1 items-center">
       <TooltipProvider>
@@ -57,7 +68,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleBold().run()
                 }
                 className={cn(
-                  editorState?.isBold && "bg-muted  text-muted-foreground"
+                  editorState?.isBold && "bg-muted  text-muted-foreground",
                 )}
               >
                 <Bold />
@@ -74,7 +85,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleItalic().run()
                 }
                 className={cn(
-                  editorState?.isItalic && "bg-muted  text-muted-foreground"
+                  editorState?.isItalic && "bg-muted  text-muted-foreground",
                 )}
               >
                 <Italic />
@@ -91,7 +102,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleStrike().run()
                 }
                 className={cn(
-                  editorState?.isStrike && "bg-muted text-muted-foreground"
+                  editorState?.isStrike && "bg-muted text-muted-foreground",
                 )}
               >
                 <Strikethrough />
@@ -108,7 +119,7 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleCodeBlock().run()
                 }
                 className={cn(
-                  editorState?.isCodeBlock && "bg-muted text-muted-foreground"
+                  editorState?.isCodeBlock && "bg-muted text-muted-foreground",
                 )}
               >
                 <Code />
@@ -128,7 +139,8 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleBulletList().run()
                 }
                 className={cn(
-                  editorState?.isBulletList && "bg-muted  text-muted-foreground"
+                  editorState?.isBulletList &&
+                    "bg-muted  text-muted-foreground",
                 )}
               >
                 <List />
@@ -145,7 +157,8 @@ export function MenuBar({ editor }: MenuBarProps) {
                   editor.chain().focus().toggleOrderedList().run()
                 }
                 className={cn(
-                  editorState?.isOrderedList && "bg-muted text-muted-foreground"
+                  editorState?.isOrderedList &&
+                    "bg-muted text-muted-foreground",
                 )}
               >
                 <ListOrdered />
@@ -184,6 +197,13 @@ export function MenuBar({ editor }: MenuBarProps) {
             </TooltipTrigger>
             <TooltipContent>Redo</TooltipContent>
           </Tooltip>
+        </div>
+        <div className="w-px h-6 bg-border mx-2"></div>
+        <div className="flex flex-wrap gap-1">
+          <ComposeAssistant content={JSON.stringify(editor.getJSON())} 
+          
+          onAccept={handleAcceptCompose}
+        />
         </div>
       </TooltipProvider>
     </div>
