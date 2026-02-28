@@ -1,4 +1,4 @@
-import arcjet, {  slidingWindow } from "@/lib/arcjet";
+import arcjet, {  sensitiveInfo, slidingWindow } from "@/lib/arcjet";
 import { base } from "../base";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 
@@ -7,11 +7,16 @@ const buildStandardAj = () =>
     slidingWindow({
       mode: "LIVE",
       interval: "1m",
-      max: 180,
+      max: 2,
     })
-  );
+  ).withRule(
+     sensitiveInfo({
+      mode: "LIVE",
+      deny:["PHONE_NUMBER","CREDIT_CARD_NUMBER"],
+     })
+     );
 
-export const readSecuritymiddleware = base
+export const heavyWriteSecuritymiddleware = base
   .$context<{
     request: Request;
     user: KindeUser<Record<string, unknown>>;
@@ -26,7 +31,11 @@ export const readSecuritymiddleware = base
           message: "Too many impactual changes. please slow down",
         });
       }
-
+      if (decision.reason.isSensitiveInfo()) {
+        throw errors.FORBIDDEN({
+          message: "Sensitive information detected!!",
+        });
+      }
       throw errors.FORBIDDEN({
         message: "Request Blocked!!",
       });

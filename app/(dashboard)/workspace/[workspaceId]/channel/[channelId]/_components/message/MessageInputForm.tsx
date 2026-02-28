@@ -77,6 +77,7 @@ export function MessageInputForm({ channelId, user }: iAppProps) {
           authorName: user.given_name ?? "Jhon Doe",
           authorAvatar: getAvatar(user.picture, user.email!),
           channelId: channelId,
+          threadId: data.threadId ?? null,
         };
         queryClient.setQueryData<InfiniteMessages>(
           ["message.list", channelId],
@@ -104,7 +105,7 @@ export function MessageInputForm({ channelId, user }: iAppProps) {
               ...old,
               pages: [updatedAtFirstPage, ...old.pages.slice(1)],
             };
-          }
+          },
         );
 
         return {
@@ -125,11 +126,11 @@ export function MessageInputForm({ channelId, user }: iAppProps) {
                   ? {
                       ...data,
                     }
-                  : m
+                  : m,
               ),
             }));
             return { ...old, pages: updatedPages };
-          }
+          },
         );
         form.reset({ channelId, content: "" });
         upload.Clear();
@@ -140,12 +141,12 @@ export function MessageInputForm({ channelId, user }: iAppProps) {
         if (context?.previousData) {
           queryClient.setQueryData(
             ["message.list", channelId],
-            context.previousData
+            context.previousData,
           );
         }
         return toast.error("Message failed to send");
       },
-    })
+    }),
   );
 
   function onSubmit(data: createMessageSchemaType) {

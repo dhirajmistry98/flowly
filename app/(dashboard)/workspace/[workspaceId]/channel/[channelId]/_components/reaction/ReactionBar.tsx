@@ -152,7 +152,7 @@ export function ReactionsBar({
   };
   return (
     <div className="mt-1 flex items-center gap-1">
-      {reactions.map((r) => (
+      {reactions?.map((r) => (
         <Button
           variant="secondary"
           size="sm"
