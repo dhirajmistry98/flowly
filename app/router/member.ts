@@ -1,5 +1,5 @@
 import z from "zod";
-import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/read";
+import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
 import { standardSecuritymiddleware } from "../middlewares/arcjet/standard";
 import { requiredAuthMiddleware } from "../middlewares/auth";
 import { base } from "../middlewares/base";
@@ -7,7 +7,7 @@ import { requiredWorkSpaceMiddleware } from "../middlewares/workspace";
 import { inviteMemberSchema } from "../schemas/member";
 import { init, organization_user, Organizations, Users } from "@kinde/management-api-js";
 import { getAvatar } from "@/lib/get-avatar";
-import { readSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
+import { readSecuritymiddleware } from "../middlewares/arcjet/read";
 
 export const inviteMember = base
   .use(requiredAuthMiddleware)

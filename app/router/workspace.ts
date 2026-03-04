@@ -8,7 +8,7 @@ import { requiredWorkSpaceMiddleware } from "../middlewares/workspace";
 
 import { init, Organizations } from "@kinde/management-api-js";
 import { standardSecuritymiddleware } from "../middlewares/arcjet/standard";
-import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/read";
+import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
 
 export const ListWorkspace = base
   .use(requiredAuthMiddleware)

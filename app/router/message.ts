@@ -14,7 +14,7 @@ import {
 } from "../schemas/message";
 import { getAvatar } from "@/lib/get-avatar";
 import { Message } from "@/lib/generated/prisma/client";
-import { readSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
+import { readSecuritymiddleware } from "../middlewares/arcjet/read"
 import { MessagelistItem } from "@/lib/types";
 
 function groupReactions(

@@ -1,5 +1,5 @@
 import z from "zod";
-import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/read";
+import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
 import { standardSecuritymiddleware } from "../middlewares/arcjet/standard";
 import { requiredAuthMiddleware } from "../middlewares/auth";
 import { base } from "../middlewares/base";
@@ -13,7 +13,7 @@ import {
   Organizations,
 } from "@kinde/management-api-js";
 import { KindeOrganization, KindeUser } from "@kinde-oss/kinde-auth-nextjs";
-import { readSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
+import { readSecuritymiddleware } from "../middlewares/arcjet/read";
 
 export const createChannel = base
   .use(requiredAuthMiddleware)
