@@ -10,6 +10,8 @@ import { init, Organizations } from "@kinde/management-api-js";
 import { standardSecuritymiddleware } from "../middlewares/arcjet/standard";
 import { heavyWriteSecuritymiddleware } from "../middlewares/arcjet/heavy-write";
 
+import { getPlan } from "@/lib/pricing";
+
 export const ListWorkspace = base
   .use(requiredAuthMiddleware)
   .use(requiredWorkSpaceMiddleware)
@@ -71,6 +73,19 @@ export const createWorkspace = base
     })
   )
   .handler(async ({ context, errors, input }) => {
+    const plan = getPlan(context.plan);
+
+    if (plan.limits.workspaces !== "unlimited") {
+      const { getUserOrganizations } = getKindeServerSession();
+      const organizations = await getUserOrganizations();
+
+      if (organizations && organizations.orgs.length >= plan.limits.workspaces) {
+        throw errors.FORBIDDEN({
+          message: `${plan.name} plan is limited to ${plan.limits.workspaces} workspaces. Upgrade for unlimited workspaces!`,
+        });
+      }
+    }
+
     init();
 
     let data;
