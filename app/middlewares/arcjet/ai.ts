@@ -1,4 +1,4 @@
-import aj, {shield,slidingWindow,sensitiveInfo, detectBot} from "@/lib/arcjet";
+import aj, { shield, slidingWindow, sensitiveInfo, detectBot } from "@/lib/arcjet";
 import { base } from "../base";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 
@@ -7,31 +7,33 @@ const buildAiAj = () => {
     shield({
       mode: "LIVE",
     })
-   ).withRule(
+  ).withRule(
     slidingWindow({
       mode: "LIVE",
       interval: 10,
       max: 3,
     })
-   ).withRule(
+  ).withRule(
     detectBot({
       mode: "LIVE",
-      allow:["CATEGORY:SEARCH_ENGINE","CATEGORY:PREVIEW"],
+      allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW"],
     })
-   ).withRule(
-   sensitiveInfo({
-    mode: "LIVE",
-    deny:["PHONE_NUMBER","CREDIT_CARD_NUMBER"],
-   })
-   );
+  ).withRule(
+    sensitiveInfo({
+      mode: "LIVE",
+      deny: ["PHONE_NUMBER", "CREDIT_CARD_NUMBER"],
+    })
+  );
 };
 
 export const aiSecuritymiddleware = base
   .$context<{
-    request: Request;
+    request?: Request;
     user: KindeUser<Record<string, unknown>>;
   }>()
   .middleware(async ({ context, next, errors }) => {
+    if (!context.request) return next();
+
     const decision = await buildAiAj().protect(context.request, {
       userId: context.user.id,
     });
@@ -55,9 +57,9 @@ export const aiSecuritymiddleware = base
         throw errors.FORBIDDEN({
           message: "Request Blocked by security policy!!",
         });
-      } 
-       throw errors.FORBIDDEN({ message:"REQUEST BlOCKED!!"})
-      
+      }
+      throw errors.FORBIDDEN({ message: "REQUEST BlOCKED!!" })
+
     }
     return next();
   });

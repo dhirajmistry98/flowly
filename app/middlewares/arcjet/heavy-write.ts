@@ -1,4 +1,4 @@
-import arcjet, {  sensitiveInfo, slidingWindow } from "@/lib/arcjet";
+import arcjet, { sensitiveInfo, slidingWindow } from "@/lib/arcjet";
 import { base } from "../base";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 
@@ -10,18 +10,20 @@ const buildStandardAj = () =>
       max: 2,
     })
   ).withRule(
-     sensitiveInfo({
+    sensitiveInfo({
       mode: "LIVE",
-      deny:["PHONE_NUMBER","CREDIT_CARD_NUMBER"],
-     })
-     );
+      deny: ["PHONE_NUMBER", "CREDIT_CARD_NUMBER"],
+    })
+  );
 
 export const heavyWriteSecuritymiddleware = base
   .$context<{
-    request: Request;
+    request?: Request;
     user: KindeUser<Record<string, unknown>>;
   }>()
   .middleware(async ({ context, next, errors }) => {
+    if (!context.request) return next();
+
     const decision = await buildStandardAj().protect(context.request, {
       userId: context.user.id,
     });
