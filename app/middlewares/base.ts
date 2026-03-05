@@ -1,22 +1,22 @@
 import { os } from "@orpc/server";
 
-export const  base = os.$context<{request: Request}>().errors({
-  RATE_LIMITED:{
+export const base = os.$context<{ request?: Request }>().errors({
+  RATE_LIMITED: {
     message: "You are being rate limited",
   },
-  BAD_REQUEST:{
-    message:" Bad request.",
+  BAD_REQUEST: {
+    message: " Bad request.",
   },
-  NOT_FOUND:{
-    message:"Resource not found.",
+  NOT_FOUND: {
+    message: "Resource not found.",
   },
-  FORBIDDEN:{
-    message:"You do not have permission to access this resource.",
+  FORBIDDEN: {
+    message: "You do not have permission to access this resource.",
   },
-  UNAUTHORIZED:{
-    message:"You are not authorized to access this resource.",
+  UNAUTHORIZED: {
+    message: "You are not authorized to access this resource.",
   },
-  INTERNAL_SERVER_ERROR:{
-    message:"An internal server error occurred.",
+  INTERNAL_SERVER_ERROR: {
+    message: "An internal server error occurred.",
   }
 })

@@ -82,7 +82,6 @@ export function PricingSection() {
                 {/* CTA */}
                 {isAuthenticated ? (
                   <PortalLink
-                    state="billing"
                     className={cn(
                       buttonVariants({
                         variant: isCurrentPlan

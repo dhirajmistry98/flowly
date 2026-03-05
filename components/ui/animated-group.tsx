@@ -23,8 +23,8 @@ export type AnimatedGroupProps = {
     item?: Variants;
   };
   preset?: PresetType;
-  as?: React.ElementType;
-  asChild?: React.ElementType;
+  as?: keyof HTMLElementTagNameMap;
+  asChild?: keyof HTMLElementTagNameMap;
 };
 
 const defaultContainerVariants: Variants = {
@@ -115,28 +115,25 @@ function AnimatedGroup({
   const containerVariants = variants?.container || selectedVariants.container;
   const itemVariants = variants?.item || selectedVariants.item;
 
-  const MotionComponent = React.useMemo(
-    () => motion.create(as as keyof JSX.IntrinsicElements),
-    [as]
-  );
-  const MotionChild = React.useMemo(
-    () => motion.create(asChild as keyof JSX.IntrinsicElements),
-    [asChild]
-  );
+  // Use motion[tag] pattern — fully type-safe with HTMLElementTagNameMap
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const MotionContainer = motion[as] as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const MotionItem = motion[asChild] as any;
 
   return (
-    <MotionComponent
+    <MotionContainer
       initial='hidden'
       animate='visible'
       variants={containerVariants}
       className={className}
     >
       {React.Children.map(children, (child, index) => (
-        <MotionChild key={index} variants={itemVariants}>
+        <MotionItem key={index} variants={itemVariants}>
           {child}
-        </MotionChild>
+        </MotionItem>
       ))}
-    </MotionComponent>
+    </MotionContainer>
   );
 }
 
