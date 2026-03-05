@@ -10,12 +10,15 @@ import { useParams } from "next/navigation";
 
 export function ChannelList() {
   const {
-    data: { channels },
+    data: { channels, plan },
   } = useSuspenseQuery(orpc.channel.list.queryOptions());
   const { workspaceId, channelId } = useParams<{ 
     workspaceId: string;
     channelId: string ;
   }>();
+
+  const isFreePlan = plan === "tier-free" || !plan;
+
   return (
     <div className="space-y-0.5 py-1">
       {channels.map((channel) => {
@@ -37,6 +40,28 @@ export function ChannelList() {
           </Link>
         );
       })}
+      {isFreePlan && (
+        <div className="px-2 py-2 mt-4">
+          <div className="flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">
+            <span>Usage</span>
+            <span>{channels.length}/5</span>
+          </div>
+          <div className="h-1 w-full bg-secondary rounded-full overflow-hidden border border-border/50">
+            <div 
+              className={cn(
+                "h-full transition-all duration-500",
+                channels.length >= 4 ? "bg-destructive" : "bg-primary"
+              )}
+              style={{ width: `${Math.min((channels.length / 5) * 100, 100)}%` }}
+            />
+          </div>
+          {channels.length >= 5 && (
+            <p className="text-[10px] text-destructive mt-1 font-medium">
+              Limit reached. Upgrade for more!
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
