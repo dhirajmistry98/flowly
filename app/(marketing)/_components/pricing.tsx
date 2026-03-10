@@ -9,7 +9,7 @@ import {
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
 import { PRICING_PLANS } from "@/lib/pricing";
-import { PortalLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import Link from "next/link";
 
 export function PricingSection() {
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
@@ -81,24 +81,20 @@ export function PricingSection() {
 
                 {/* CTA */}
                 {isAuthenticated ? (
-                  <PortalLink
+                  <Link
+                    href="/workspace/billing"
                     className={cn(
                       buttonVariants({
-                        variant: isCurrentPlan
-                          ? "outline"
-                          : tier.featured
-                            ? "default"
-                            : "outline",
+                        variant: tier.featured ? "default" : "outline",
                       }),
                       "w-full mt-6",
-                      isCurrentPlan && "opacity-50 pointer-events-none",
                     )}
                   >
-                    {isCurrentPlan ? "Current Plan" : "Upgrade Now"}
-                  </PortalLink>
+                    Go to Billing
+                  </Link>
                 ) : (
                   <RegisterLink
-                    postLoginRedirectURL="/workspace"
+                    postLoginRedirectURL="/workspace/billing"
                     authUrlParams={{
                       planId: tier.id,
                       is_create_org: "true",

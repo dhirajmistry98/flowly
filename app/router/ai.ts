@@ -9,8 +9,6 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { streamToEventIterator } from "@orpc/server";
 import { aiSecuritymiddleware } from "../middlewares/arcjet/ai";
 
-import { getPlan } from "@/lib/pricing";
-
 const openrouter = createOpenRouter({
   apiKey: process.env.LLM_KEY,
 });
@@ -35,14 +33,6 @@ export const generateThreadSummary = base
     }),
   )
   .handler(async ({ input, context, errors }) => {
-    const plan = getPlan(context.plan);
-    if (!plan.limits.aiFeatures) {
-      throw errors.FORBIDDEN({
-        message:
-          "AI features require the AI plan. Upgrade now to use summaries and more!",
-      });
-    }
-
     const baseMessage = await prisma.message.findFirst({
       where: {
         id: input.messageId,
@@ -145,17 +135,8 @@ export const generateCompose = base
       content: z.string(),
     }),
   )
-  .handler(async ({ input, context, errors }) => {
-    const plan = getPlan(context.plan);
-    if (!plan.limits.aiFeatures) {
-      throw errors.FORBIDDEN({
-        message:
-          "AI features require the AI plan. Upgrade now to use AI Compose!",
-      });
-    }
-
+  .handler(async ({ input }) => {
     const markdown = await jsonToMarkdown(input.content);
-
     const system = [
       "You are an expert rewriting assistant. You are not a chatbot.",
       "Task: Rewrite the provided content to be clearer and better structured while preserving meaning, facts, terminology, and names.",

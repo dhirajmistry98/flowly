@@ -43,11 +43,11 @@ async function existingProxy(req: NextRequest): Promise<NextResponse> {
 }
 
 const authProxy = withAuth(existingProxy, {
-  publicPaths: ["/", "/api/uploadthing"],
+  publicPaths: ["/", "/api/uploadthing", "/api/auth"],
 }) as (request: NextRequest, event: NextFetchEvent) => Promise<NextResponse>;
 
 export default createMiddleware(aj, authProxy);
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|/rpc).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|/rpc|api/auth).*)"],
 };
