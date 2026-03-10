@@ -14,9 +14,8 @@ import {
 } from "../schemas/message";
 import { getAvatar } from "@/lib/get-avatar";
 import { Message } from "@/lib/generated/prisma/client";
-import { readSecuritymiddleware } from "../middlewares/arcjet/read"
+import { readSecuritymiddleware } from "../middlewares/arcjet/read";
 import { MessagelistItem } from "@/lib/types";
-import { getPlan } from "@/lib/pricing";
 
 function groupReactions(
   reactions: { emoji: string; userId: string }[],
@@ -71,13 +70,6 @@ export const createMessage = base
       throw errors.FORBIDDEN();
     }
     if (input.threadId) {
-      const plan = getPlan(context.plan);
-      if (!plan.limits.threadMessages) {
-        throw errors.FORBIDDEN({
-          message: `${plan.name} plan does not support threaded messages. Upgrade for threads!`,
-        });
-      }
-
       const parentMessage = await prisma.message.findFirst({
         where: {
           id: input.threadId,
@@ -150,23 +142,17 @@ export const listMessages = base
     }
 
     const limit = input.limit ?? 30;
-    const plan = getPlan(context.plan);
-    const historyLimitDate =
-      plan.limits.messageHistory !== "unlimited"
-        ? new Date(Date.now() - plan.limits.messageHistory * 24 * 60 * 60 * 1000)
-        : undefined;
 
     const messages = await prisma.message.findMany({
       where: {
         channelId: input.channelId,
         threadId: null,
-        ...(historyLimitDate ? { createdAt: { gte: historyLimitDate } } : {}),
       },
       ...(input.cursor
         ? {
-          cursor: { id: input.cursor },
-          skip: 1,
-        }
+            cursor: { id: input.cursor },
+            skip: 1,
+          }
         : {}),
       take: limit,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
@@ -288,13 +274,6 @@ export const ListThreadReplies = base
     }),
   )
   .handler(async ({ input, context, errors }) => {
-    const plan = getPlan(context.plan);
-    if (!plan.limits.threadMessages) {
-      throw errors.FORBIDDEN({
-        message: `${plan.name} plan does not support threaded messages. Upgrade to view threads!`,
-      });
-    }
-
     const parentRow = await prisma.message.findFirst({
       where: {
         id: input.messageId,
@@ -360,7 +339,7 @@ export const ListThreadReplies = base
           emoji: r.emoji,
           userId: r.userId,
         })),
-        context.user.id
+        context.user.id,
       ),
     };
     const message: MessagelistItem[] = messagesQuery.map((m) => ({
@@ -381,7 +360,7 @@ export const ListThreadReplies = base
           emoji: r.emoji,
           userId: r.userId,
         })),
-        context.user.id
+        context.user.id,
       ),
     }));
     return {

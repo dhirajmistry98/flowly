@@ -119,8 +119,7 @@ export function ComposeAssistant({ content, onAccept }: ComposeAssistantProps) {
               </Button>
             </div>
           ) : ComposeText ? (
-            <MessageResponse
-              parseIncompleteMarkdown={status !== "ready"}
+            <MessageResponse        parseIncompleteMarkdown={status !== "ready"}
               className="text-sm text-gray-500"
             >
               {ComposeText}

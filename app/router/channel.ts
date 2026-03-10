@@ -15,8 +15,6 @@ import {
 import { KindeOrganization, KindeUser } from "@kinde-oss/kinde-auth-nextjs";
 import { readSecuritymiddleware } from "../middlewares/arcjet/read";
 
-import { getPlan } from "@/lib/pricing";
-
 export const createChannel = base
   .use(requiredAuthMiddleware)
   .use(requiredWorkSpaceMiddleware)
@@ -31,22 +29,6 @@ export const createChannel = base
   .input(ChannelNameSchema)
   .output(z.custom<Channel>())
   .handler(async ({ input, context, errors }) => {
-    const plan = getPlan(context.plan);
-
-    if (plan.limits.channelsPerWorkspace !== "unlimited") {
-      const channelCount = await prisma.channel.count({
-        where: {
-          workspaceId: context.workspace.orgCode,
-        },
-      });
-
-      if (channelCount >= plan.limits.channelsPerWorkspace) {
-        throw errors.FORBIDDEN({
-          message: `${plan.name} plan is limited to ${plan.limits.channelsPerWorkspace} channels. Upgrade for unlimited channels!`,
-        });
-      }
-    }
-
     const channel = await prisma.channel.create({
       data: {
         name: input.name,
