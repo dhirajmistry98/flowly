@@ -4,10 +4,7 @@ import { useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
-import {
-  RegisterLink,
-  useKindeBrowserClient,
-} from "@kinde-oss/kinde-auth-nextjs";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { PRICING_PLANS } from "@/lib/pricing";
 import Link from "next/link";
 
@@ -16,6 +13,10 @@ export function PricingSection() {
   const { isAuthenticated, getClaim } = useKindeBrowserClient();
   const plan = getClaim("plan");
   const currentPlanId = plan?.value;
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <section id="pricing" className="relative py-24 sm:py-32">
@@ -80,36 +81,17 @@ export function PricingSection() {
                 </p>
 
                 {/* CTA */}
-                {isAuthenticated ? (
-                  <Link
-                    href="/workspace/billing"
-                    className={cn(
-                      buttonVariants({
-                        variant: tier.featured ? "default" : "outline",
-                      }),
-                      "w-full mt-6",
-                    )}
-                  >
-                    Go to Billing
-                  </Link>
-                ) : (
-                  <RegisterLink
-                    postLoginRedirectURL="/workspace/billing"
-                    authUrlParams={{
-                      planId: tier.id,
-                      is_create_org: "true",
-                      org_name: tier.name,
-                    }}
-                    className={cn(
-                      buttonVariants({
-                        variant: tier.featured ? "default" : "outline",
-                      }),
-                      "w-full mt-6",
-                    )}
-                  >
-                    {tier.cta}
-                  </RegisterLink>
-                )}
+                <Link
+                  href="/workspace/billing"
+                  className={cn(
+                    buttonVariants({
+                      variant: tier.featured ? "default" : "outline",
+                    }),
+                    "w-full mt-6",
+                  )}
+                >
+                  Go to Billing
+                </Link>
 
                 {/* Features */}
                 <ul className="mt-8 space-y-3 text-sm xl:mt-10">
