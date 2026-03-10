@@ -13,6 +13,8 @@ export interface PlanDetails {
     workspaces: number | "unlimited";
     channelsPerWorkspace: number | "unlimited";
     aiFeatures: boolean;
+    threadMessages: boolean;
+    messageHistory: number | "unlimited"; // number is days or message count. Let's use days.
   };
   featured?: boolean;
   cta: string;
@@ -34,6 +36,8 @@ export const PRICING_PLANS: PlanDetails[] = [
       workspaces: 5,
       channelsPerWorkspace: 5,
       aiFeatures: false,
+      threadMessages: false,
+      messageHistory: 30, // 30 days of message history
     },
     featured: false,
     cta: "Start for free",
@@ -55,6 +59,8 @@ export const PRICING_PLANS: PlanDetails[] = [
       workspaces: "unlimited",
       channelsPerWorkspace: "unlimited",
       aiFeatures: false,
+      threadMessages: true,
+      messageHistory: "unlimited",
     },
     featured: true,
     cta: "Get started",
@@ -77,6 +83,8 @@ export const PRICING_PLANS: PlanDetails[] = [
       workspaces: "unlimited",
       channelsPerWorkspace: "unlimited",
       aiFeatures: true,
+      threadMessages: true,
+      messageHistory: "unlimited",
     },
     featured: false,
     cta: "Get started",

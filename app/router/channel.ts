@@ -32,7 +32,7 @@ export const createChannel = base
   .output(z.custom<Channel>())
   .handler(async ({ input, context, errors }) => {
     const plan = getPlan(context.plan);
-    
+
     if (plan.limits.channelsPerWorkspace !== "unlimited") {
       const channelCount = await prisma.channel.count({
         where: {
@@ -72,7 +72,7 @@ export const listChannels = base
       channels: z.array(z.custom<Channel>()),
       currentWorkspace: z.custom<KindeOrganization<unknown>>(),
       members: z.array(z.custom<organization_user>()),
-      plan: z.string().optional(),
+      plan: z.string().nullish(),
     }),
   )
   .handler(async ({ context }) => {
