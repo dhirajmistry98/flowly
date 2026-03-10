@@ -1,4 +1,6 @@
+ "use client";
 import React from "react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import {
   MessageSquare,
   Sparkles,
@@ -48,6 +50,10 @@ const features = [
 ];
 
 export function FeaturesSection() {
+  const { isAuthenticated } = useKindeBrowserClient();
+  if (!isAuthenticated) {
+    return null;
+  }
   return (
     <section id="features" className="relative py-24 sm:py-32 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
