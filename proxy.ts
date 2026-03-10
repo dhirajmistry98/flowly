@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import arcjet, { createMiddleware, detectBot } from "@arcjet/next";
-import {
-  withAuth,
-} from "@kinde-oss/kinde-auth-nextjs/server";
+import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
 import { NextRequest, NextResponse, NextFetchEvent } from "next/server";
 
 const aj = arcjet({
@@ -20,7 +18,7 @@ const aj = arcjet({
   ],
 });
 
-async function existingMiddleware(req: NextRequest): Promise<NextResponse> {
+async function existingProxy(req: NextRequest): Promise<NextResponse> {
   const anyReq = req as {
     nextUrl: NextRequest["nextUrl"];
     kindeAuth?: { token?: any; user?: any };
@@ -44,11 +42,11 @@ async function existingMiddleware(req: NextRequest): Promise<NextResponse> {
   return NextResponse.next();
 }
 
-const authMiddleware = withAuth(existingMiddleware, {
-  publicPaths: ["/","/api/uploadthing"],
+const authProxy = withAuth(existingProxy, {
+  publicPaths: ["/", "/api/uploadthing"],
 }) as (request: NextRequest, event: NextFetchEvent) => Promise<NextResponse>;
 
-export default createMiddleware(aj, authMiddleware);
+export default createMiddleware(aj, authProxy);
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|/rpc).*)"],
