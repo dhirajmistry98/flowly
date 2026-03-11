@@ -2,8 +2,6 @@ import arcjet, { detectBot } from "@arcjet/next";
 import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   rules: [
