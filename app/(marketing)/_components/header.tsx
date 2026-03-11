@@ -84,6 +84,7 @@ export const HeroHeader = () => {
                       </Link>
                     ) : (
                       <LoginLink
+                        postLoginRedirectURL="/workspace"
                         className="text-muted-foreground hover:text-accent-foreground block duration-150"
                         onClick={() => {
                           if (authBusy) return;
@@ -112,6 +113,7 @@ export const HeroHeader = () => {
                         </Link>
                       ) : (
                         <LoginLink
+                          postLoginRedirectURL="/workspace"
                           className="text-muted-foreground hover:text-accent-foreground block duration-150"
                           onClick={() => {
                             if (authBusy) return;
@@ -149,6 +151,7 @@ export const HeroHeader = () => {
                   ) : (
                     <>
                       <LoginLink
+                        postLoginRedirectURL="/workspace"
                         className={buttonVariants({
                           variant: "outline",
                           size: "sm",
@@ -166,6 +169,7 @@ export const HeroHeader = () => {
                       </LoginLink>
 
                       <RegisterLink
+                        postLoginRedirectURL="/workspace"
                         className={buttonVariants({
                           size: "sm",
                           className: cn(
@@ -185,6 +189,7 @@ export const HeroHeader = () => {
                         className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
                       >
                         <RegisterLink
+                          postLoginRedirectURL="/workspace"
                           className={buttonVariants({
                             size: "sm",
                             className: cn(
