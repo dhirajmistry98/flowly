@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "dzpcrl8exv.ufs.sh",
       },
+      {
+        protocol: "https",
+        hostname: "html.tailus.io",
+      },
     ],
   },
 };

@@ -85,9 +85,15 @@ export const HeroHeader = () => {
                     ) : (
                       <LoginLink
                         postLoginRedirectURL="/workspace"
-                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                        onClick={() => {
-                          if (authBusy) return;
+                        className={cn(
+                          "text-muted-foreground hover:text-accent-foreground block duration-150",
+                          authBusy && "pointer-events-none opacity-50",
+                        )}
+                        onClick={(e) => {
+                          if (authBusy) {
+                            e.preventDefault();
+                            return;
+                          }
                           setAuthBusy(true);
                         }}
                       >
@@ -114,9 +120,15 @@ export const HeroHeader = () => {
                       ) : (
                         <LoginLink
                           postLoginRedirectURL="/workspace"
-                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                          onClick={() => {
-                            if (authBusy) return;
+                          className={cn(
+                            "text-muted-foreground hover:text-accent-foreground block duration-150",
+                            authBusy && "pointer-events-none opacity-50",
+                          )}
+                          onClick={(e) => {
+                            if (authBusy) {
+                              e.preventDefault();
+                              return;
+                            }
                             setAuthBusy(true);
                           }}
                         >
@@ -160,8 +172,11 @@ export const HeroHeader = () => {
                             authBusy && "pointer-events-none opacity-50",
                           ),
                         })}
-                        onClick={() => {
-                          if (authBusy) return;
+                        onClick={(e) => {
+                          if (authBusy) {
+                            e.preventDefault();
+                            return;
+                          }
                           setAuthBusy(true);
                         }}
                       >
@@ -177,8 +192,11 @@ export const HeroHeader = () => {
                             authBusy && "pointer-events-none opacity-50",
                           ),
                         })}
-                        onClick={() => {
-                          if (authBusy) return;
+                        onClick={(e) => {
+                          if (authBusy) {
+                            e.preventDefault();
+                            return;
+                          }
                           setAuthBusy(true);
                         }}
                       >
@@ -196,8 +214,11 @@ export const HeroHeader = () => {
                               authBusy && "pointer-events-none opacity-50",
                             ),
                           })}
-                          onClick={() => {
-                            if (authBusy) return;
+                          onClick={(e) => {
+                            if (authBusy) {
+                              e.preventDefault();
+                              return;
+                            }
                             setAuthBusy(true);
                           }}
                         >
