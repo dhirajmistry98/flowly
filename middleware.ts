@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import arcjet, { createMiddleware, detectBot } from "@arcjet/next";
+import arcjet, { detectBot } from "@arcjet/next";
 import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
-import { NextRequest, NextResponse, NextFetchEvent } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
@@ -18,35 +17,36 @@ const aj = arcjet({
   ],
 });
 
-async function existingProxy(req: NextRequest): Promise<NextResponse> {
-  const anyReq = req as {
-    nextUrl: NextRequest["nextUrl"];
-    kindeAuth?: { token?: any; user?: any };
-  };
+export default withAuth(
+  async function middleware(req: any) {
+    // 1. Run Arcjet protection
+    const decision = await aj.protect(req);
+    if (decision.isDenied()) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-  const url = req.nextUrl;
+    // 2. Org code redirect logic
+    const url = req.nextUrl;
+    const orgCode =
+      req.kindeAuth?.user?.org_code ||
+      req.kindeAuth?.token?.org_code ||
+      req.kindeAuth?.token?.claims?.org_code;
 
-  const orgCode =
-    anyReq.kindeAuth?.user?.org_code ||
-    anyReq.kindeAuth?.token?.org_code ||
-    anyReq.kindeAuth?.token?.claims?.org_code;
+    if (
+      url.pathname.startsWith("/workspace") &&
+      !url.pathname.includes(orgCode || "")
+    ) {
+      const redirectUrl = url.clone();
+      redirectUrl.pathname = `/workspace/${orgCode}`;
+      return NextResponse.redirect(redirectUrl);
+    }
 
-  if (
-    url.pathname.startsWith("/workspace") &&
-    !url.pathname.includes(orgCode || "")
-  ) {
-    url.pathname = `/workspace/${orgCode}`;
-    return NextResponse.redirect(url);
+    return NextResponse.next();
+  },
+  {
+    publicPaths: ["/", "/api/uploadthing", "/api/auth", "/rpc"],
   }
-
-  return NextResponse.next();
-}
-
-const authProxy = withAuth(existingProxy, {
-  publicPaths: ["/", "/api/uploadthing", "/api/auth"],
-}) as (request: NextRequest, event: NextFetchEvent) => Promise<NextResponse>;
-
-export default createMiddleware(aj, authProxy);
+);
 
 export const config = {
   matcher: [
@@ -55,9 +55,10 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - api/auth (Kinde auth routes - VERY IMPORTANT to exclude to avoid double-initiation)
+     * - api/auth (Kinde auth routes - EXCLUDING THESE IS CRITICAL)
      * - rpc (ORPC routes)
+     * - any static file with an extension (e.g. .png, .jpg, .svg)
      */
-    "/((?!_next/static|_next/image|favicon.ico|api/auth|rpc).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/auth|rpc|.*\\..*).*)",
   ],
 };
