@@ -11,6 +11,7 @@ import { cn } from "../../../../lib/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "../../../../lib/orpc";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { useState } from "react";
 
 const colorCombinations = [
   "bg-blue-500 hover:bg-blue-600 text-white",
@@ -36,6 +37,7 @@ export function WorkspaceList() {
   const {
     data: { workspaces, currentWorkspace },
   } = useSuspenseQuery(orpc.workspace.list.queryOptions());
+  const [authBusy, setAuthBusy] = useState(false);
 
   return (
     <TooltipProvider>
@@ -45,13 +47,23 @@ export function WorkspaceList() {
           return (
             <Tooltip key={ws.id}>
               <TooltipTrigger asChild>
-              <LoginLink orgCode={ws.id}>
+              <LoginLink
+                orgCode={ws.id}
+                onClick={(e) => {
+                  if (authBusy) {
+                    e.preventDefault();
+                    return;
+                  }
+                  setAuthBusy(true);
+                }}
+              >
                   <Button
                   size="icon"
                   className={cn(
                     "size-12 transition-all duration-200",
                     getWorkspaceColor(ws.id),
-                    isActive ? "rounded-lg" : "rounded-xl hover:rounded-lg"
+                    isActive ? "rounded-lg" : "rounded-xl hover:rounded-lg",
+                    authBusy && "pointer-events-none opacity-50"
                   )}
                 >
                   <span className="text-sm font-semibold">{ws.avatar}</span>
