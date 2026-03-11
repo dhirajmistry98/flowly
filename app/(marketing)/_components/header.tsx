@@ -85,10 +85,7 @@ export const HeroHeader = () => {
                     ) : (
                       <LoginLink
                         postLoginRedirectURL="/workspace"
-                        className={cn(
-                          "text-muted-foreground hover:text-accent-foreground block duration-150",
-                          authBusy && "pointer-events-none opacity-50",
-                        )}
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
                         onClick={(e) => {
                           if (authBusy) {
                             e.preventDefault();
@@ -120,10 +117,7 @@ export const HeroHeader = () => {
                       ) : (
                         <LoginLink
                           postLoginRedirectURL="/workspace"
-                          className={cn(
-                            "text-muted-foreground hover:text-accent-foreground block duration-150",
-                            authBusy && "pointer-events-none opacity-50",
-                          )}
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
                           onClick={(e) => {
                             if (authBusy) {
                               e.preventDefault();

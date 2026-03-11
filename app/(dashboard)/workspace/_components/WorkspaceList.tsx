@@ -47,28 +47,28 @@ export function WorkspaceList() {
           return (
             <Tooltip key={ws.id}>
               <TooltipTrigger asChild>
-              <LoginLink
-                orgCode={ws.id}
-                onClick={(e) => {
-                  if (authBusy) {
-                    e.preventDefault();
-                    return;
-                  }
-                  setAuthBusy(true);
-                }}
-              >
-                  <Button
-                  size="icon"
-                  className={cn(
-                    "size-12 transition-all duration-200",
-                    getWorkspaceColor(ws.id),
-                    isActive ? "rounded-lg" : "rounded-xl hover:rounded-lg",
-                    authBusy && "pointer-events-none opacity-50"
-                  )}
+                <LoginLink
+                  orgCode={ws.id}
+                  onClick={(e) => {
+                    if (authBusy) {
+                      e.preventDefault();
+                      return;
+                    }
+                    setAuthBusy(true);
+                  }}
                 >
-                  <span className="text-sm font-semibold">{ws.avatar}</span>
-                </Button>
-              </LoginLink>
+                  <Button
+                    size="icon"
+                    className={cn(
+                      "size-12 transition-all duration-200",
+                      getWorkspaceColor(ws.id),
+                      isActive ? "rounded-lg" : "rounded-xl hover:rounded-lg",
+                      authBusy && "pointer-events-none opacity-50"
+                    )}
+                  >
+                    <span className="text-sm font-semibold">{ws.avatar}</span>
+                  </Button>
+                </LoginLink>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>
