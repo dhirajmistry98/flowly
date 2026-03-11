@@ -8,44 +8,63 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { PRICING_PLANS } from "@/lib/pricing";
 import Link from "next/link";
 
+import { motion } from "motion/react";
+
 export function PricingSection() {
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
   const { isAuthenticated, getClaim } = useKindeBrowserClient();
   const plan = getClaim("plan");
   const currentPlanId = plan?.value;
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
   return (
     <section id="pricing" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-primary">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-base font-semibold leading-7 text-primary"
+          >
             Pricing
-          </h2>
+          </motion.h2>
 
-          <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
+          >
             The right price for you, whoever you are
-          </p>
+          </motion.p>
 
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 text-lg leading-8 text-muted-foreground"
+          >
             Choose a plan that fits your needs and budget.
-          </p>
+          </motion.p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:max-w-none lg:grid-cols-3">
-          {PRICING_PLANS.map((tier) => {
+        <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:max-w-none lg:grid-cols-3 gap-x-8">
+          {PRICING_PLANS.map((tier, index) => {
             const isCurrentPlan =
               currentPlanId === tier.id ||
               (!currentPlanId && tier.id === "tier-free");
 
             return (
-              <div
+              <motion.div
                 key={tier.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
                 className={cn(
                   tier.featured
                     ? "bg-secondary/70 ring-2 ring-primary"
@@ -121,7 +140,7 @@ export function PricingSection() {
                     );
                   })}
                 </ul>
-              </div>
+              </motion.div>
             );
           })}
         </div>
