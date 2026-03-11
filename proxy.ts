@@ -2,6 +2,8 @@ import arcjet, { detectBot } from "@arcjet/next";
 import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   rules: [
@@ -50,15 +52,6 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - api/auth (Kinde auth routes - EXCLUDING THESE IS CRITICAL)
-     * - rpc (ORPC routes)
-     * - any static file with an extension (e.g. .png, .jpg, .svg)
-     */
     "/((?!_next/static|_next/image|favicon.ico|api/auth|rpc|.*\\..*).*)",
   ],
 };
