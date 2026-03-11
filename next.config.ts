@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
+  serverExternalPackages: [
+    "@prisma/client",
+    "@arcjet/next",
+    "@kinde-oss/kinde-auth-nextjs",
+  ],
   images: {
     remotePatterns: [
       {
