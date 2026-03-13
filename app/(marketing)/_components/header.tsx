@@ -7,16 +7,12 @@ import { cn } from "../../../lib/utils";
 import Logo from "@/public/logo.png";
 import Image from "next/image";
 import {
-  LoginLink,
-  LogoutLink,
-  RegisterLink,
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
 
 const menuItems = [
   { name: "Features", href: "#features" },
   { name: "Solution", href: "#solution" },
-  { name: "Pricing", href: "#pricing" },
   { name: "About", href: "#about" },
 ];
 
@@ -76,26 +72,28 @@ export const HeroHeader = () => {
                 {menuItems.map((item) => (
                   <li key={item.name}>
                     {user ? (
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    ) : (
-                      <LoginLink
-                        postLoginRedirectURL="/workspace"
-                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                      <button
                         onClick={(e) => {
-                          if (authBusy) {
-                            e.preventDefault();
+                          e.preventDefault();
+                          if (window.location.pathname !== '/') {
+                            window.location.href = '/' + item.href;
                             return;
                           }
-                          setAuthBusy(true);
+                          const el = document.getElementById(item.href.replace('#', ''));
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                          setMenuState(false);
                         }}
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
                       >
                         <span>{item.name}</span>
-                      </LoginLink>
+                      </button>
+                    ) : (
+                      <a
+                        href="/api/auth/login?post_login_redirect_url=/workspace"
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                      >
+                        <span>{item.name}</span>
+                      </a>
                     )}
                   </li>
                 ))}
@@ -108,26 +106,28 @@ export const HeroHeader = () => {
                   {menuItems.map((item) => (
                     <li key={item.name}>
                       {user ? (
-                        <Link
-                          href={item.href}
-                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                        >
-                          <span>{item.name}</span>
-                        </Link>
-                      ) : (
-                        <LoginLink
-                          postLoginRedirectURL="/workspace"
-                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                        <button
                           onClick={(e) => {
-                            if (authBusy) {
-                              e.preventDefault();
+                            e.preventDefault();
+                            if (window.location.pathname !== '/') {
+                              window.location.href = '/' + item.href;
                               return;
                             }
-                            setAuthBusy(true);
+                            const el = document.getElementById(item.href.replace('#', ''));
+                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                            setMenuState(false);
                           }}
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150 text-left w-full"
                         >
                           <span>{item.name}</span>
-                        </LoginLink>
+                        </button>
+                      ) : (
+                        <a
+                          href="/api/auth/login?post_login_redirect_url=/workspace"
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                        >
+                          <span>{item.name}</span>
+                        </a>
                       )}
                     </li>
                   ))}
@@ -145,79 +145,50 @@ export const HeroHeader = () => {
                       >
                         <span>Dashboard</span>
                       </Link>
-                      <LogoutLink
+                      <a
+                        href="/api/auth/logout"
                         className={buttonVariants({
                           variant: "outline",
                           size: "sm",
                         })}
                       >
                         <span>Logout</span>
-                      </LogoutLink>
+                      </a>
                     </>
                   ) : (
                     <>
-                      <LoginLink
-                        postLoginRedirectURL="/workspace"
+                      <a
+                        href="/api/auth/login?post_login_redirect_url=/workspace"
                         className={buttonVariants({
                           variant: "outline",
                           size: "sm",
-                          className: cn(
-                            isScrolled && "lg:hidden",
-                            authBusy && "pointer-events-none opacity-50",
-                          ),
+                          className: cn(isScrolled && "lg:hidden"),
                         })}
-                        onClick={(e) => {
-                          if (authBusy) {
-                            e.preventDefault();
-                            return;
-                          }
-                          setAuthBusy(true);
-                        }}
                       >
                         Login
-                      </LoginLink>
+                      </a>
 
-                      <RegisterLink
-                        postLoginRedirectURL="/workspace"
+                      <a
+                        href="/api/auth/register?post_login_redirect_url=/workspace"
                         className={buttonVariants({
                           size: "sm",
-                          className: cn(
-                            isScrolled && "lg:hidden",
-                            authBusy && "pointer-events-none opacity-50",
-                          ),
+                          className: cn(isScrolled && "lg:hidden"),
                         })}
-                        onClick={(e) => {
-                          if (authBusy) {
-                            e.preventDefault();
-                            return;
-                          }
-                          setAuthBusy(true);
-                        }}
                       >
                         Sign Up
-                      </RegisterLink>
+                      </a>
 
                       <div
                         className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
                       >
-                        <RegisterLink
-                          postLoginRedirectURL="/workspace"
+                        <a
+                          href="/api/auth/register?post_login_redirect_url=/workspace"
                           className={buttonVariants({
                             size: "sm",
-                            className: cn(
-                              authBusy && "pointer-events-none opacity-50",
-                            ),
                           })}
-                          onClick={(e) => {
-                            if (authBusy) {
-                              e.preventDefault();
-                              return;
-                            }
-                            setAuthBusy(true);
-                          }}
                         >
                           Get Started
-                        </RegisterLink>
+                        </a>
                       </div>
                     </>
                   )}

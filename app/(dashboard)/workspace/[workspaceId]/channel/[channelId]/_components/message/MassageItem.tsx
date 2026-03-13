@@ -11,6 +11,12 @@ import { orpc } from "@/lib/orpc";
 import { useQueryClient } from "@tanstack/react-query";
 import { ReactionsBar } from "../reaction/ReactionBar";
 
+/** Safely parse rich-text JSON stored in the DB; returns null on any failure. */
+function safeParseContent(raw: string | null | undefined) {
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
 interface iAppProps {
   message: MessagelistItem;
   currentUserId: string;
@@ -30,7 +36,7 @@ export function MessageItem({ message, currentUserId }: iAppProps) {
     });
     queryClient
       .prefetchQuery({ ...options, staleTime: 60_000 })
-      .catch(() => {});
+      .catch(() => { });
   }, [message.id, queryClient]);
 
   return (
@@ -69,7 +75,7 @@ export function MessageItem({ message, currentUserId }: iAppProps) {
           <>
             <SafeContent
               className="text-sm wrap-break-word prose dark:prose-invert max-w-none mark:text-primary"
-              content={JSON.parse(message.content)}
+              content={safeParseContent(message.content)}
             />
             {message.imageUrl && (
               <div className="mt-3">

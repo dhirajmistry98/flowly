@@ -54,7 +54,6 @@ export const listChannels = base
       channels: z.array(z.custom<Channel>()),
       currentWorkspace: z.custom<KindeOrganization<unknown>>(),
       members: z.array(z.custom<organization_user>()),
-      plan: z.string().nullish(),
     }),
   )
   .handler(async ({ context }) => {
@@ -83,7 +82,6 @@ export const listChannels = base
       channels,
       members,
       currentWorkspace: context.workspace,
-      plan: context.plan,
     };
   });
 
