@@ -3,11 +3,17 @@ import Image from "next/image";
 import { ReactionsBar } from "../reaction/ReactionBar";
 import { MessagelistItem } from "@/lib/types";
 
+/** Safely parse rich-text JSON stored in the DB; returns null on any failure. */
+function safeParseContent(raw: string | null | undefined) {
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
 interface ThreadReplyProps {
   message: MessagelistItem;
-  selectedThread:string
+  selectedThread: string
 }
-export function ThreadReply({ message ,selectedThread}: ThreadReplyProps) {
+export function ThreadReply({ message, selectedThread }: ThreadReplyProps) {
   return (
     <div className="flex space-x-3 p-3 hover:bg-muted/30 rounded-lg">
       <Image
@@ -32,7 +38,7 @@ export function ThreadReply({ message ,selectedThread}: ThreadReplyProps) {
 
         <SafeContent
           className="text-sm break-word dark:prose-invert marker:text-primary max-w-none"
-          content={JSON.parse(message.content)}
+          content={safeParseContent(message.content)}
         />
         {message.imageUrl && (
           <div className="mt-2">
@@ -45,9 +51,9 @@ export function ThreadReply({ message ,selectedThread}: ThreadReplyProps) {
             />
           </div>
         )}
-        <ReactionsBar context={{type:'thread',threadId:selectedThread}}
-        reactions={message.reactions}
-        messageId={message.id}
+        <ReactionsBar context={{ type: 'thread', threadId: selectedThread }}
+          reactions={message.reactions}
+          messageId={message.id}
         />
       </div>
     </div>

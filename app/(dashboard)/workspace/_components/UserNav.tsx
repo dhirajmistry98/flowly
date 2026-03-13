@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
-import { LogoutLink,PortalLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { LogoutLink, PortalLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { CreditCard, LogOut, User } from "lucide-react";
 import { orpc } from "../../../../lib/orpc";
@@ -21,7 +21,7 @@ import Image from "next/image";
 
 
 export function UserNav() {
-  const {data:{user},} = useSuspenseQuery(orpc.workspace.list.queryOptions());
+  const { data: { user }, } = useSuspenseQuery(orpc.workspace.list.queryOptions());
 
 
   return (
@@ -33,8 +33,8 @@ export function UserNav() {
           className="size-12 rounded-xl border-border/50 hover:bg-accent hover:text-accent-foreground hover:rounded-lg transition-all duration-200 bg-background/50"
         >
           <Avatar>
-            <Image src={getAvatar(user.picture,user.email!)}   alt="User Image"  fill className="object-cover"/>
-           
+            <Image src={getAvatar(user.picture, user.email!)} alt="User Image" fill className="object-cover" />
+
             <AvatarFallback>
               {user.given_name?.slice(0, 1).toUpperCase()}
             </AvatarFallback>
@@ -50,7 +50,7 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal flex items-center gap-2 px-1 py-1.5 text-left text-sm">
           <Avatar className="relative size-8">
             <AvatarImage
-              src={getAvatar(user.picture,user.email!)}
+              src={getAvatar(user.picture, user.email!)}
               alt="User Image"
               className="object-cover"
             />
@@ -59,33 +59,27 @@ export function UserNav() {
             </AvatarFallback>
           </Avatar>
           <div className="gird flex-1 text-left text-sm leading-tight">
-<p className="truncate font-medium">{user.given_name}</p>
-<p className="text-muted-foreground truncate text-xs ">dhriaj1368@gmail.com</p>
+            <p className="truncate font-medium">{user.given_name}</p>
+            <p className="text-muted-foreground truncate text-xs ">dhriaj1368@gmail.com</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator/>
-          <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-             <PortalLink>
-               <User/>
-            Account
-             </PortalLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <PortalLink>
-                 <CreditCard/>
-            Billing
-              </PortalLink>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <PortalLink>
+              <User />
+              Account
+            </PortalLink>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
 
-        <DropdownMenuSeparator/>
-         <DropdownMenuItem asChild>
-             <LogoutLink>
-              <LogOut/>
-              Log Out
-             </LogoutLink>
-              </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <LogoutLink>
+            <LogOut />
+            Log Out
+          </LogoutLink>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

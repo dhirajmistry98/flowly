@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export const requiredAuthMiddleware = base
   .$context<{
-    session?: { user?: KindeUser<Record<string, unknown>>; plan?: string };
+    session?: { user?: KindeUser<Record<string, unknown>> };
   }>()
   .middleware(async ({ context, next }) => {
     const session = context.session ?? (await getSession());
@@ -14,17 +14,15 @@ export const requiredAuthMiddleware = base
       return redirect("/api/auth/login");
     }
     return next({
-      context: { user: session.user, plan: session.plan },
+      context: { user: session.user },
     });
   });
 
 const getSession = async () => {
-  const { getUser, getClaim } = getKindeServerSession();
+  const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const plan = await getClaim("plan");
 
   return {
     user,
-    plan: plan?.value as string | undefined,
   };
 };
