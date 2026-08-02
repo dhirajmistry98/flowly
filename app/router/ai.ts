@@ -13,7 +13,9 @@ const openrouter = createOpenRouter({
   apiKey: process.env.LLM_KEY,
 });
 
-const MODEL_ID = "z-ai/glm-4.5-air:free";
+const MODEL_ID = process.env.OPENROUTER_MODEL_ID?.trim() || "z-ai/glm-4.5-air";
+const THREAD_SUMMARY_MAX_OUTPUT_TOKENS = 300;
+const COMPOSE_MAX_OUTPUT_TOKENS = 1200;
 
 const model = openrouter.chat(MODEL_ID);
 
@@ -109,6 +111,7 @@ export const generateThreadSummary = base
     const result = streamText({
       model,
       system,
+      maxOutputTokens: THREAD_SUMMARY_MAX_OUTPUT_TOKENS,
       messages: [
         {
           role: "user",
@@ -148,6 +151,7 @@ export const generateCompose = base
     const result = streamText({
       model,
       system,
+      maxOutputTokens: COMPOSE_MAX_OUTPUT_TOKENS,
       messages: [
         {
           role: "user",
